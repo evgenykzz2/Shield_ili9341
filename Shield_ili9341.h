@@ -39,9 +39,31 @@ public:
 
 private:
   uint8_t m_mode;
+  int16_t m_tft_width;
+  int16_t m_tft_height;
+  int16_t m_width;
+  int16_t m_height;
+
+  void DrawHLine_safe( int16_t x0, int16_t y0, int16_t x1, uint16_t color );
+  void DrawHLine_unsafe( int16_t x0, int16_t y0, int16_t x1, uint16_t color );
+
+  void DrawLine_safe( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color );
+  void DrawLine_unsafe( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color );
+
+  void DrawCircle_safe( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
+  void DrawCircle_unsafe( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
+
+  void DrawPixel_unsafe( int16_t x, int16_t y, uint16_t color );
+
+  void DrawCircleFill_safe( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
+  void DrawCircleFill_unsafe( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
+
 public:
   Shield_ili9341();
-  void Init( uint8_t mode );
+  void Init( int16_t tft_width, int16_t tft_height, uint8_t mode );
+  int16_t Width() const;
+  int16_t Height() const;
+
   void ResetHw();
   void ResetSw();
 
@@ -65,9 +87,10 @@ public:
   void DrawRectFast( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint8_t color8 );
   void DrawRect( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color );
 
-  void DrawPixelFast( uint16_t x, uint16_t y, uint8_t color8 );
-  void DrawPixel( uint16_t x, uint16_t y, uint16_t color );
+  void DrawPixelFast( int16_t x, int16_t y, uint8_t color8 );
+  void DrawPixel( int16_t x, int16_t y, uint16_t color );
 
+  void DrawHLine( int16_t x0, int16_t y0, int16_t x1, uint16_t color );
   void DrawLine( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color );
   void DrawCircle( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
   void DrawCircleFill( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
