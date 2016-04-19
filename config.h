@@ -64,4 +64,26 @@ static const int LCDpin[8] = {25, 26, 27, 28, 14, 15, 29, 11};
 #define TFT_DATA_MODE    REG_PIOC_ODSR |= 8;
 #define TFT_DATAPIN_SET(v) REG_PIOD_ODSR = v;
 
+#elif defined(ESP8266)
+
+static const int LCDpin[8] = {D3, D10, D4, D9, D2, D1, D6, D7};
+
+#define RESET D0
+#define CS D0
+#define RS D5
+#define WR D8
+#define RD D0
+
+// RESET CS RS     WR    RD
+//           4000  8000
+
+//FIX me
+#define TFT_SWAP_DATA_WR  GPO &= ~0x8000; GPO |= 0x8000;
+#define TFT_SWAP_CMD_WR   GPO &= ~0x8000; GPO |= 0x8000;
+#define TFT_SWAP          GPO &= ~0x8000; GPO |= 0x8000;
+#define TFT_CMD_MODE      GPO &= ~0x4000;
+#define TFT_DATA_MODE     GPO |= 0x4000;
+
+#define TFT_DATAPIN_SET(v) GPO = (GPO&0xFFFFCFC0) | ( v&0x3F) | ((v&0xC0) << 6);
+
 #endif

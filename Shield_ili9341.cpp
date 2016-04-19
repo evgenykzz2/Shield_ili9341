@@ -157,6 +157,37 @@ void Shield_ili9341::SetWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y
   TFT_SWAP_DATA_WR
 }
 
+void Shield_ili9341::SetColumn( uint16_t x0, uint16_t x1 )
+{
+  SendCmd(0x2A);
+  TFT_DATAPIN_SET(x0>>8);
+  TFT_SWAP_DATA_WR
+  TFT_DATAPIN_SET(x0&0xFF);
+  TFT_SWAP_DATA_WR
+  TFT_DATAPIN_SET(x1>>8);
+  TFT_SWAP_DATA_WR
+  TFT_DATAPIN_SET(x1&0xFF);
+  TFT_SWAP_DATA_WR
+}
+
+void Shield_ili9341::SetPage( uint16_t y0, uint16_t y1 )
+{
+  SendCmd(0x2B);
+  TFT_DATAPIN_SET(y0>>8);
+  TFT_SWAP_DATA_WR
+  TFT_DATAPIN_SET(y0&0xFF);
+  TFT_SWAP_DATA_WR
+  TFT_DATAPIN_SET(y1>>8);
+  TFT_SWAP_DATA_WR
+  TFT_DATAPIN_SET(y1&0xFF);
+  TFT_SWAP_DATA_WR
+}
+
+uint16_t Shield_ili9341::RGB16( uint8_t r, uint8_t g, uint8_t b )
+{
+    return ( (((r&0xF8)|(g>>5)) << 8) | ((g<<5)&0xE0) | (b>>3) );
+}
+
 void Shield_ili9341::FillFast( uint8_t color8 )
 {
   if ( uint8_t(m_mode & MemoryAccessControl_Rotate) != 0 )
@@ -263,4 +294,56 @@ void Shield_ili9341::DrawPixel( uint16_t x, uint16_t y, uint16_t color )
   TFT_SWAP_DATA_WR
   TFT_DATAPIN_SET(color & 0xFF);
   TFT_SWAP_DATA_WR
+}
+
+
+void Shield_ili9341::DrawLine( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color )
+{
+    int16_t dx = x0-x1;
+    int16_t dy = y0-y1;
+    if ( abs(dx) > abs(dy) )
+    {
+        if ( x0 > x1 )
+        {
+            int16_t t;
+            t=x0; x0=x1; x1=t;
+            t=y0; y0=y1; y1=t;
+        }
+        int32_t ys = (1024*int32_t(y1-y0))/int32_t(x1-x0);
+        int32_t yt = int32_t(y0)*1024;
+        for ( int16_t x = x0; x <= x1; ++x )
+        {
+            int16_t y = yt >> 10;
+            SetWindow(x, y, x, y);
+            TFT_DATAPIN_SET(0x2C);
+            TFT_SWAP_CMD_WR
+            TFT_DATAPIN_SET(color >> 8);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET(color & 0xFF);
+            TFT_SWAP_DATA_WR
+            yt += ys;
+        }
+    } else
+    {
+        if ( y0 > y1 )
+        {
+            int16_t t;
+            t=x0; x0=x1; x1=t;
+            t=y0; y0=y1; y1=t;
+        }
+        int32_t xs = (1024*int32_t(x1-x0))/int32_t(y1-y0);
+        int32_t xt = int32_t(x0)*1024;
+        for ( int16_t y = y0; y <= y1; ++y )
+        {
+            int16_t x = xt >> 10;
+            SetWindow(x, y, x, y);
+            TFT_DATAPIN_SET(0x2C);
+            TFT_SWAP_CMD_WR
+            TFT_DATAPIN_SET(color >> 8);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET(color & 0xFF);
+            TFT_SWAP_DATA_WR
+            xt += xs;
+        }
+    }
 }

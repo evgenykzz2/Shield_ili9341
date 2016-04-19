@@ -46,6 +46,8 @@ public:
   void ResetSw();
 
   void SetWindow( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1 );
+  void SetColumn( uint16_t x0, uint16_t x1 );
+  void SetPage( uint16_t y0, uint16_t y1 ); 
   void VerticalScrollingDefinition( uint16_t top_fixed, uint16_t v_scroll, uint16_t bot_fixed );
   void VerticalScrollingStartAddress( uint16_t address );
   void PartialArea( uint16_t area_start, uint16_t area_end );
@@ -55,6 +57,8 @@ public:
   void TearingEffectLineOff();
   void MemoryAccessControl( uint8_t mode );
 
+  static uint16_t RGB16( uint8_t r, uint8_t g, uint8_t b );
+
   void FillFast( uint8_t color8 );
   void Fill( uint16_t color );
 
@@ -63,4 +67,6 @@ public:
 
   void DrawPixelFast( uint16_t x, uint16_t y, uint8_t color8 );
   void DrawPixel( uint16_t x, uint16_t y, uint16_t color );
+
+  void DrawLine( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color );
 };
