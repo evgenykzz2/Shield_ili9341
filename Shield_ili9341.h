@@ -17,10 +17,28 @@ public:
     {
         Color8_Black = 0,
         Color8_White = 0xFF,
-        Color8_Green = 71,
-        Color8_Blue = 24,
-        Color8_Red = 224
+        Color8_Green = 7,
+        Color8_Blue = 192,
+        Color8_Red = 24,
+        Color8_Yellow = 63,
+        Color8_Magenta = 184,
+        Color8_Cyan = 231
     };
+
+    enum EColor
+    {
+        Color_Black = 0x0000,
+        Color_White = 0xFFFF,
+        Color_Green = 0x07E0,
+        Color_Blue = 0x001F,
+        Color_Red = 0xF800,
+        Color_Yellow = 0xFFE0,
+        Color_Magenta = 0xF81F,
+        Color_Cyan = 0x07FF
+    };
+
+private:
+  uint8_t m_mode;
 public:
   Shield_ili9341();
   void Init( uint8_t mode );
@@ -39,4 +57,10 @@ public:
 
   void FillFast( uint8_t color8 );
   void Fill( uint16_t color );
+
+  void DrawRectFast( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint8_t color8 );
+  void DrawRect( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color );
+
+  void DrawPixelFast( uint16_t x, uint16_t y, uint8_t color8 );
+  void DrawPixel( uint16_t x, uint16_t y, uint16_t color );
 };

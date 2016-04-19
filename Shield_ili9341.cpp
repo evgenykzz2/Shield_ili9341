@@ -1,11 +1,13 @@
 #include "config.h"
 #include "Shield_ili9341.h"
 
-Shield_ili9341::Shield_ili9341()
+Shield_ili9341::Shield_ili9341() : m_mode(0)
 {}
 
 void Shield_ili9341::Init( uint8_t mode )
 {
+  m_mode = mode;
+
   //PinSetup
   pinMode(RESET, OUTPUT);
   pinMode(CS, OUTPUT);
@@ -68,6 +70,7 @@ void Shield_ili9341::ResetSw()
 
 void Shield_ili9341::MemoryAccessControl( uint8_t mode )
 {
+  m_mode = mode;
   SendCmd(0x36);
   SendData(mode);
 }
@@ -121,43 +124,50 @@ void Shield_ili9341::TearingEffectLineOff()
 
 void Shield_ili9341::SendCmd( uint8_t cmd )
 {
-  TFT_CMD_MODE
   TFT_DATAPIN_SET(cmd);
-  TFT_SWAP
+  TFT_SWAP_CMD_WR
 }
 
 void Shield_ili9341::SendData( uint8_t data )
 {
-  TFT_DATA_MODE
   TFT_DATAPIN_SET(data);
-  TFT_SWAP
+  TFT_SWAP_DATA_WR
 }
 
 void Shield_ili9341::SetWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 {
   SendCmd(0x2A);
-  SendData(x0>>8);
-  SendData(x0&0xFF);
-  SendData(x1>>8);
-  SendData(x1&0xFF);
+  TFT_DATAPIN_SET(x0>>8);
+  TFT_SWAP_DATA_WR
+  TFT_DATAPIN_SET(x0&0xFF);
+  TFT_SWAP_DATA_WR
+  TFT_DATAPIN_SET(x1>>8);
+  TFT_SWAP_DATA_WR
+  TFT_DATAPIN_SET(x1&0xFF);
+  TFT_SWAP_DATA_WR
 
   SendCmd(0x2B);
-  SendData(y0>>8);
-  SendData(y0);
-  SendData(y1>>8);
-  SendData(y1);
+  TFT_DATAPIN_SET(y0>>8);
+  TFT_SWAP_DATA_WR
+  TFT_DATAPIN_SET(y0&0xFF);
+  TFT_SWAP_DATA_WR
+  TFT_DATAPIN_SET(y1>>8);
+  TFT_SWAP_DATA_WR
+  TFT_DATAPIN_SET(y1&0xFF);
+  TFT_SWAP_DATA_WR
 }
 
 void Shield_ili9341::FillFast( uint8_t color8 )
 {
-  SetWindow(0, 0, TFT_WIDTH-1, TFT_HEIGHT-1);
+  if ( uint8_t(m_mode & MemoryAccessControl_Rotate) != 0 )
+    SetWindow(0, 0, TFT_WIDTH-1, TFT_HEIGHT-1);
+  else
+    SetWindow(0, 0, TFT_HEIGHT-1, TFT_WIDTH-1 );
   SendCmd(0x2c);
-  TFT_DATA_MODE
   TFT_DATAPIN_SET(color8);
-  for ( uint16_t w = 0; w < TFT_WIDTH/4; ++w )
+  uint16_t sq = ( uint32_t(TFT_WIDTH)*uint32_t(TFT_HEIGHT)/4 );
+  for ( uint16_t i = 0; i < sq; ++i )
   {
-    for ( uint16_t h = 0; h < TFT_HEIGHT; ++h )
-    {
       TFT_SWAP_DATA_WR
       TFT_SWAP_DATA_WR
       TFT_SWAP_DATA_WR
@@ -166,29 +176,91 @@ void Shield_ili9341::FillFast( uint8_t color8 )
       TFT_SWAP_DATA_WR
       TFT_SWAP_DATA_WR
       TFT_SWAP_DATA_WR
-    }
   }
 }
 
 void Shield_ili9341::Fill( uint16_t color )
 {
-  uint8_t h = color >> 8;
-  uint8_t l = color & 0xFF;
-  SetWindow(0, 0, TFT_WIDTH-1, TFT_HEIGHT-1);
+  if ( uint8_t(m_mode & MemoryAccessControl_Rotate) != 0 )
+    SetWindow(0, 0, TFT_WIDTH-1, TFT_HEIGHT-1);
+  else
+    SetWindow(0, 0, TFT_HEIGHT-1, TFT_WIDTH-1 );
+  uint8_t hi = color >> 8;
+  uint8_t lo = color & 0xFF;
   SendCmd(0x2c);
-  TFT_DATA_MODE
-  for ( uint16_t w = 0; w < TFT_WIDTH/2; ++w )
+  uint16_t sq = ( uint32_t(TFT_WIDTH)*uint32_t(TFT_HEIGHT)/4 );
+  for ( uint16_t i = 0; i < sq; ++i )
   {
-    for ( uint16_t h = 0; h < TFT_HEIGHT; ++h )
+      TFT_DATAPIN_SET(hi);
+      TFT_SWAP_DATA_WR
+      TFT_DATAPIN_SET(lo);
+      TFT_SWAP_DATA_WR
+      TFT_DATAPIN_SET(hi);
+      TFT_SWAP_DATA_WR
+      TFT_DATAPIN_SET(lo);
+      TFT_SWAP_DATA_WR
+
+      TFT_DATAPIN_SET(hi);
+      TFT_SWAP_DATA_WR
+      TFT_DATAPIN_SET(lo);
+      TFT_SWAP_DATA_WR
+      TFT_DATAPIN_SET(hi);
+      TFT_SWAP_DATA_WR
+      TFT_DATAPIN_SET(lo);
+      TFT_SWAP_DATA_WR
+  }
+}
+
+void Shield_ili9341::DrawRectFast( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint8_t color8 )
+{
+  SetWindow(x0, y0, x1, y1);
+  SendCmd(0x2c);
+  TFT_DATAPIN_SET(color8);
+  for ( uint16_t w = y0; w <= y1; ++w )
+  {
+    for ( uint16_t h = x0; h <= x1; ++h )
     {
-      TFT_DATAPIN_SET(h);
       TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(l);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(h);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(l);
       TFT_SWAP_DATA_WR
     }
   }
+}
+
+void Shield_ili9341::DrawRect( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color )
+{
+  SetWindow(x0, y0, x1, y1);
+  uint8_t hi = color >> 8;
+  uint8_t lo = color & 0xFF;
+  SendCmd(0x2c);
+  for ( uint16_t w = y0; w <= y1; ++w )
+  {
+    for ( uint16_t h = x0; h <= x1; ++h )
+    {
+      TFT_DATAPIN_SET(hi);
+      TFT_SWAP_DATA_WR
+      TFT_DATAPIN_SET(lo);
+      TFT_SWAP_DATA_WR
+    }
+  }
+}
+
+void Shield_ili9341::DrawPixelFast( uint16_t x, uint16_t y, uint8_t color8 )
+{
+  SetWindow(x, y, x, y);
+  TFT_DATAPIN_SET(0x2C);
+  TFT_SWAP_CMD_WR
+  TFT_DATAPIN_SET(color8);
+  TFT_SWAP_DATA_WR
+  TFT_SWAP_DATA_WR
+}
+
+void Shield_ili9341::DrawPixel( uint16_t x, uint16_t y, uint16_t color )
+{
+  SetWindow(x, y, x, y);
+  TFT_DATAPIN_SET(0x2C);
+  TFT_SWAP_CMD_WR
+  TFT_DATAPIN_SET(color >> 8);
+  TFT_SWAP_DATA_WR
+  TFT_DATAPIN_SET(color & 0xFF);
+  TFT_SWAP_DATA_WR
 }
