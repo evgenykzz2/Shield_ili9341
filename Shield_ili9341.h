@@ -69,4 +69,6 @@ public:
   void DrawPixel( uint16_t x, uint16_t y, uint16_t color );
 
   void DrawLine( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color );
+  void DrawCircle( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
+  void DrawCircleFill( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
 };

@@ -296,7 +296,6 @@ void Shield_ili9341::DrawPixel( uint16_t x, uint16_t y, uint16_t color )
   TFT_SWAP_DATA_WR
 }
 
-
 void Shield_ili9341::DrawLine( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color )
 {
     int16_t dx = x0-x1;
@@ -344,6 +343,130 @@ void Shield_ili9341::DrawLine( int16_t x0, int16_t y0, int16_t x1, int16_t y1, u
             TFT_DATAPIN_SET(color & 0xFF);
             TFT_SWAP_DATA_WR
             xt += xs;
+        }
+    }
+}
+
+void Shield_ili9341::DrawCircle( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color )
+{
+    int16_t x0 = x_center;
+    int16_t y0 = y_center;
+
+    int16_t x = rad;
+    int16_t y = 0;
+    int16_t radiusError = 1-x;
+
+    while(x >= y)
+    {
+        int16_t yd0 = y+y0;
+        int16_t yd1 = x+y0;
+        int16_t yd2 = -y+y0;
+        int16_t yd3 = -x+y0;
+
+        int16_t xd0 = x+x0;
+        int16_t xd1 = y+x0;
+        int16_t xd2 = -x+x0;
+        int16_t xd3 = -y+x0;
+
+        DrawPixel( xd0, yd0, color );
+        DrawPixel( xd2, yd0, color );
+
+        DrawPixel( xd1, yd1, color );
+        DrawPixel( xd3, yd1, color );
+
+        DrawPixel( xd2, yd2, color );
+        DrawPixel( xd0, yd2, color );
+
+        DrawPixel( xd3, yd3, color );
+        DrawPixel( xd1, yd3, color );
+
+        y++;        
+        if (radiusError < 0)
+            radiusError += 2 * y + 1;
+        else
+        {
+            x--;
+            radiusError += 2 * (y - x + 1);
+        }
+    }
+}
+
+
+void Shield_ili9341::DrawCircleFill( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color )
+{
+    int16_t x0 = x_center;
+    int16_t y0 = y_center;
+
+    int16_t x = rad;
+    int16_t y = 0;
+    int16_t radiusError = 1-x;
+
+    uint8_t hi = color >> 8;
+    uint8_t lo = color & 0xFF;
+
+    while(x >= y)
+    {
+        int16_t yd0 = y+y0;
+        int16_t yd1 = x+y0;
+        int16_t yd2 = -y+y0;
+        int16_t yd3 = -x+y0;
+
+        int16_t xd0 = x+x0;
+        int16_t xd1 = y+x0;
+        int16_t xd2 = -x+x0;
+        int16_t xd3 = -y+x0;
+
+        SetWindow(xd2, yd0, xd0, yd0);
+        TFT_DATAPIN_SET(0x2C);
+        TFT_SWAP_CMD_WR
+        for ( int16_t i = xd2; i < xd0; ++i )
+        {
+            TFT_DATAPIN_SET(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET(lo);
+            TFT_SWAP_DATA_WR
+        }
+
+        SetWindow(xd3, yd1, xd1, yd1);
+        TFT_DATAPIN_SET(0x2C);
+        TFT_SWAP_CMD_WR
+        for ( int16_t i = xd3; i < xd1; ++i )
+        {
+            TFT_DATAPIN_SET(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET(lo);
+            TFT_SWAP_DATA_WR
+        }
+
+        SetWindow(xd2, yd2, xd0, yd2);
+        TFT_DATAPIN_SET(0x2C);
+        TFT_SWAP_CMD_WR
+        for ( int16_t i = xd2; i < xd0; ++i )
+        {
+            TFT_DATAPIN_SET(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET(lo);
+            TFT_SWAP_DATA_WR
+        }
+
+        SetWindow(xd3, yd3, xd1, yd3);
+        TFT_DATAPIN_SET(0x2C);
+        TFT_SWAP_CMD_WR
+        for ( int16_t i = xd2; i < xd0; ++i )
+        {
+            TFT_DATAPIN_SET(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET(lo);
+            TFT_SWAP_DATA_WR
+        }
+
+        y++;
+        if (radiusError < 0)
+            radiusError += 2 * y + 1;
+        else
+        {
+            x--;
+            radiusError += 2 * (y - x + 1);
         }
     }
 }
