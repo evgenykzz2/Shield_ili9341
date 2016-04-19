@@ -53,8 +53,6 @@ private:
   void DrawCircle_safe( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
   void DrawCircle_unsafe( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
 
-  void DrawPixel_unsafe( int16_t x, int16_t y, uint16_t color );
-
   void DrawCircleFill_safe( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
   void DrawCircleFill_unsafe( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
 
@@ -84,11 +82,12 @@ public:
   void FillFast( uint8_t color8 );
   void Fill( uint16_t color );
 
-  void DrawRectFast( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint8_t color8 );
-  void DrawRect( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color );
+  //void DrawRectFast( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t color8 );
+  void DrawRect( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color );
 
   void DrawPixelFast( int16_t x, int16_t y, uint8_t color8 );
   void DrawPixel( int16_t x, int16_t y, uint16_t color );
+  void DrawPixel_unsafe( int16_t x, int16_t y, uint16_t color );
 
   void DrawHLine( int16_t x0, int16_t y0, int16_t x1, uint16_t color );
   void DrawLine( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color );

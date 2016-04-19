@@ -257,23 +257,16 @@ void Shield_ili9341::Fill( uint16_t color )
   }
 }
 
-void Shield_ili9341::DrawRectFast( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint8_t color8 )
+void Shield_ili9341::DrawRect( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color )
 {
-  SetWindow(x0, y0, x1, y1);
-  SendCmd(0x2c);
-  TFT_DATAPIN_SET(color8);
-  for ( uint16_t w = y0; w <= y1; ++w )
-  {
-    for ( uint16_t h = x0; h <= x1; ++h )
-    {
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-    }
-  }
-}
-
-void Shield_ili9341::DrawRect( uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color )
-{
+  if (x0>x1) { int16_t t=x0; x0=x1; x1=t; }
+  if (y0>y1) { int16_t t=y0; y0=y1; y1=t; }
+  if ( y1 < 0 || x1 < 0 || x0 >= m_width || y0 >= m_height )
+      return;
+  if (x0<0) x0=0;
+  if (y0<0) y0=0;
+  if (x1>=m_width)  x1=m_width-1;
+  if (y1>=m_height) y1=m_height-1;
   SetWindow(x0, y0, x1, y1);
   uint8_t hi = color >> 8;
   uint8_t lo = color & 0xFF;
