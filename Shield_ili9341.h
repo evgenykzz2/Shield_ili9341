@@ -1,5 +1,16 @@
 #pragma once
 #include <stdint.h>
+#include <avr/pgmspace.h>
+
+struct glyph_param
+{
+    uint16_t offset;
+    uint8_t width;
+    uint8_t height;
+    int8_t posx;
+    int8_t posy;
+    int8_t stepx;
+};
 
 class Shield_ili9341
 {
@@ -99,4 +110,6 @@ public:
   void StreamPixel8( uint8_t color8 );
   void StreamPixels( uint16_t color, uint16_t count );
   void StreamPixels8( uint8_t color8, uint16_t count );
+
+  void DrawText( const String& str, int16_t x, int16_t y, uint16_t color, const PROGMEM uint8_t* font_data, const PROGMEM glyph_param* font_info );
 };

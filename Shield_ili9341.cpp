@@ -777,3 +777,9 @@ void Shield_ili9341::StreamPixels8( uint8_t color8, uint16_t count )
         i ++;
     }
 }
+
+void Shield_ili9341::DrawText( const String& str, int16_t x, int16_t y, uint16_t color, const PROGMEM uint8_t* font_data, const PROGMEM glyph_param* font_info )
+{
+
+
+}
