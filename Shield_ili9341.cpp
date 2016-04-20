@@ -719,3 +719,61 @@ void Shield_ili9341::DrawCircleFill( int16_t x_center, int16_t y_center, int16_t
     else
         DrawCircleFill_unsafe( x_center, y_center, rad, color );
 }
+
+void Shield_ili9341::StreamStart()
+{
+    TFT_DATAPIN_SET(0x2C);
+    TFT_SWAP_CMD_WR
+}
+
+void Shield_ili9341::StreamPixel( uint16_t color )
+{
+    TFT_DATAPIN_SET(color >> 8);
+    TFT_SWAP_DATA_WR
+    TFT_DATAPIN_SET(color & 0xFF);
+    TFT_SWAP_DATA_WR
+}
+
+void Shield_ili9341::StreamPixel8( uint8_t color8 )
+{
+    TFT_DATAPIN_SET(color8);
+    TFT_SWAP_DATA_WR
+    TFT_SWAP_DATA_WR
+}
+
+void Shield_ili9341::StreamPixels( uint16_t color, uint16_t count )
+{
+    uint8_t hi = color >> 8;
+    uint8_t lo = color & 0xFF;
+    for ( uint16_t i = 0; i < count; ++i )
+    {
+        TFT_DATAPIN_SET(hi);
+        TFT_SWAP_DATA_WR
+        TFT_DATAPIN_SET(lo);
+        TFT_SWAP_DATA_WR
+    }
+}
+
+void Shield_ili9341::StreamPixels8( uint8_t color8, uint16_t count )
+{
+    TFT_DATAPIN_SET(color8);
+    uint16_t i = 0;
+    while ( i+3 < count )
+    {
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+        i += 4;
+    }
+    while ( i < count )
+    {
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+        i ++;
+    }
+}

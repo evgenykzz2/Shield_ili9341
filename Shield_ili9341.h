@@ -93,4 +93,10 @@ public:
   void DrawLine( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color );
   void DrawCircle( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
   void DrawCircleFill( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
+
+  void StreamStart();
+  void StreamPixel( uint16_t color );
+  void StreamPixel8( uint8_t color8 );
+  void StreamPixels( uint16_t color, uint16_t count );
+  void StreamPixels8( uint8_t color8, uint16_t count );
 };
