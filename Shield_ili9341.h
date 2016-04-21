@@ -4,12 +4,12 @@
 
 struct glyph_param
 {
-    uint16_t offset;
-    uint8_t width;
-    uint8_t height;
-    int8_t posx;
-    int8_t posy;
-    int8_t stepx;
+    uint16_t offset;        //0
+    uint8_t width;          //2
+    uint8_t height;         //3
+    int8_t posx;            //4
+    int8_t posy;            //5
+    int8_t stepx;           //6
 };
 
 class Shield_ili9341

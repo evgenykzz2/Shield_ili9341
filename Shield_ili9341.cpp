@@ -34,10 +34,10 @@ void Shield_ili9341::Init( int16_t tft_width, int16_t tft_height, uint8_t mode )
   ResetHw();
   ResetSw();
 
-  SendCmd(0xB6);    // Display Function Control 
+  /*SendCmd(0xB6);    // Display Function Control 
   SendData(0x08); 
   SendData(0x82);
-  SendData(0x27);
+  SendData(0x27);*/
 
   SendCmd(0x3A);  //Pixel Format 16bpp only
   SendData(0x55); //RGB
@@ -62,7 +62,7 @@ void Shield_ili9341::Init( int16_t tft_width, int16_t tft_height, uint8_t mode )
   SendCmd(0x13);
   SendCmd(0x38);
 
-  MemoryAccessControl( mode );
+  MemoryAccessControl( 8 + mode );
 }
 
 void Shield_ili9341::ResetHw()
@@ -780,6 +780,42 @@ void Shield_ili9341::StreamPixels8( uint8_t color8, uint16_t count )
 
 void Shield_ili9341::DrawText( const String& str, int16_t x, int16_t y, uint16_t color, const PROGMEM uint8_t* font_data, const PROGMEM glyph_param* font_info )
 {
+    for ( int i = 0; i < str.length(); ++i )
+    {
+        char ch = str.charAt(i);
+        if  ( ch < 32 || ch > 128 )
+            continue;
+        const PROGMEM uint8_t* info = (const PROGMEM uint8_t*)(font_info + ch - 32);
 
+        int16_t draw_x = x + (int8_t)pgm_read_byte(info+4);
+        int16_t draw_y = y - (int8_t)pgm_read_byte(info+5);
 
+        uint8_t w = pgm_read_byte(info+2);
+        uint8_t h = pgm_read_byte(info+3);
+
+        uint16_t ofs = pgm_read_word(info+0);
+        uint8_t line_size = (w+7)/8;
+        for ( uint8_t yi = 0; yi < h; ++yi )
+        {
+            uint16_t so = ofs;
+            uint8_t m = 0x80;
+            uint8_t d = pgm_read_byte( font_data+so );
+            for ( uint8_t xi = 0; xi < w; ++xi )
+            {
+                uint8_t b = d & m;
+                if ( b != 0 )
+                    DrawPixel(draw_x+xi, draw_y+yi, color);
+                m = m >> 1;
+                if ( m == 0 )
+                {
+                    so ++;
+                    m = 0x80;
+                    d = pgm_read_byte(font_data+so);
+                }
+            }
+            ofs += line_size;
+        }
+
+        x += (int8_t)pgm_read_byte(info+6);
+    }
 }
