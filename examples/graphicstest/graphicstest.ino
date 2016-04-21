@@ -6,16 +6,35 @@ Shield_ili9341 tft;
 void setup()
 {
   Serial.begin(9600);
-  //tft.Init( 320, 240, Shield_ili9341::MemoryAccessControl_Rotate | Shield_ili9341::MemoryAccessControl_FlipX );
-  tft.Init( 480, 320, Shield_ili9341::MemoryAccessControl_Rotate );
+  tft.Init( 320, 240, Shield_ili9341::MemoryAccessControl_Rotate | Shield_ili9341::MemoryAccessControl_FlipX );
+  //tft.Init( 480, 320, Shield_ili9341::MemoryAccessControl_Rotate );
 }
 
 void loop()
 {
   {
+    unsigned long time0 = micros();
     tft.FillFast( Shield_ili9341::Color8_Black );
     for ( int i = 0; i < 10000; ++i )
       tft.DrawText( "Test", rand()%tft.Width(), rand()%tft.Height(), rand(), g_font_data, g_font_info );
+    unsigned long time1 = micros();
+    Serial.print("Text: ");
+    Serial.println( time1-time0 );
+  }
+
+  {
+    unsigned long time0 = micros();
+    tft.FillFast( Shield_ili9341::Color8_Black );
+    
+    for ( int i = 0; i < tft.Height(); ++i )
+    {
+      tft.DrawTextScale( "*Move Text*", 4, i, i, 0xFFFF, g_font_data, g_font_info );
+      tft.DrawTextScale( "*Move Text*", 4, i, i, 0x0, g_font_data, g_font_info );
+    }
+
+    unsigned long time1 = micros();
+    Serial.print("Move Text: ");
+    Serial.println( time1-time0 );
   }
 
   //Fast fill 8bit color
@@ -74,7 +93,8 @@ void loop()
     tft.FillFast( Shield_ili9341::Color8_Black );
     unsigned long time0 = micros();
     for ( int32_t i = 0; i < 1000; ++i )
-      tft.DrawRect( rand()%tft.Width(), rand()%tft.Height(), rand()%tft.Width(), rand()%tft.Height(), rand() );
+      //tft.DrawRect( rand()%tft.Width(), rand()%tft.Height(), rand()%tft.Width(), rand()%tft.Height(), rand() );
+      tft.DrawRectFast( rand()%tft.Width(), rand()%tft.Height(), rand()%tft.Width(), rand()%tft.Height(), rand() );
     unsigned long time1 = micros();
     Serial.print("DrawRect: ");
     Serial.println( time1-time0 );

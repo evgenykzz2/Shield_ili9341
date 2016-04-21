@@ -1,4 +1,4 @@
-#include "config.h"
+﻿#include "config.h"
 #include "Shield_ili9341.h"
 
 Shield_ili9341::Shield_ili9341() : m_mode(0), m_tft_width(0), m_tft_height(0), m_width(0), m_height(0)
@@ -257,6 +257,23 @@ void Shield_ili9341::Fill( uint16_t color )
   }
 }
 
+void Shield_ili9341::DrawRectFast( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t color8 )
+{
+  if (x0>x1) { int16_t t=x0; x0=x1; x1=t; }
+  if (y0>y1) { int16_t t=y0; y0=y1; y1=t; }
+  if ( y1 < 0 || x1 < 0 || x0 >= m_width || y0 >= m_height )
+      return;
+  if (x0<0) x0=0;
+  if (y0<0) y0=0;
+  if (x1>=m_width)  x1=m_width-1;
+  if (y1>=m_height) y1=m_height-1;
+  SetWindow(x0, y0, x1, y1);
+  SendCmd(0x2c);
+  TFT_DATAPIN_SET(color8);
+  uint16_t sq = ( int32_t(y1-y0+1)*int32_t(x1-x0+1) );
+  StreamPixels8( color8, sq );
+}
+
 void Shield_ili9341::DrawRect( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color )
 {
   if (x0>x1) { int16_t t=x0; x0=x1; x1=t; }
@@ -329,33 +346,15 @@ void Shield_ili9341::DrawHLine_safe( int16_t x0, int16_t y0, int16_t x1, uint16_
       x1 = m_width-1;
 
   SetWindow(x0, y0, x1, y0);
-  uint8_t hi = color >> 8;
-  uint8_t lo = color & 0xFF;
-  TFT_DATAPIN_SET(0x2C);
-  TFT_SWAP_CMD_WR
-  for ( int16_t x = x0; x < x1; ++x )
-  {
-      TFT_DATAPIN_SET(hi);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(lo);
-      TFT_SWAP_DATA_WR
-  }
+  StreamStart();
+  StreamPixels( color, x1-x0+1 );
 }
 
 void Shield_ili9341::DrawHLine_unsafe( int16_t x0, int16_t y0, int16_t x1, uint16_t color )
 {
   SetWindow(x0, y0, x1, y0);
-  uint8_t hi = color >> 8;
-  uint8_t lo = color & 0xFF;
-  TFT_DATAPIN_SET(0x2C);
-  TFT_SWAP_CMD_WR
-  for ( int16_t x = x0; x < x1; ++x )
-  {
-      TFT_DATAPIN_SET(hi);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(lo);
-      TFT_SWAP_DATA_WR
-  }
+  StreamStart();
+  StreamPixels( color, x1-x0+1 );
 }
 
 void Shield_ili9341::DrawHLine( int16_t x0, int16_t y0, int16_t x1, uint16_t color )
@@ -778,14 +777,17 @@ void Shield_ili9341::StreamPixels8( uint8_t color8, uint16_t count )
     }
 }
 
-void Shield_ili9341::DrawText( const String& str, int16_t x, int16_t y, uint16_t color, const PROGMEM uint8_t* font_data, const PROGMEM glyph_param* font_info )
+void Shield_ili9341::DrawText( const String& str, int16_t x, int16_t y, uint16_t color, const uint8_t* font_data, const glyph_param* font_info )
 {
+    uint8_t hi = color >> 8;
+    uint8_t lo = color & 0xFF;
+
     for ( int i = 0; i < str.length(); ++i )
     {
         char ch = str.charAt(i);
         if  ( ch < 32 || ch > 128 )
             continue;
-        const PROGMEM uint8_t* info = (const PROGMEM uint8_t*)(font_info + ch - 32);
+        const uint8_t* info = (const uint8_t*)(font_info + ch - 32);
 
         int16_t draw_x = x + (int8_t)pgm_read_byte(info+4);
         int16_t draw_y = y - (int8_t)pgm_read_byte(info+5);
@@ -797,25 +799,142 @@ void Shield_ili9341::DrawText( const String& str, int16_t x, int16_t y, uint16_t
         uint8_t line_size = (w+7)/8;
         for ( uint8_t yi = 0; yi < h; ++yi )
         {
-            uint16_t so = ofs;
-            uint8_t m = 0x80;
-            uint8_t d = pgm_read_byte( font_data+so );
-            for ( uint8_t xi = 0; xi < w; ++xi )
+            int16_t yline = draw_y+yi;
+            if ( yline < 0 )
             {
-                uint8_t b = d & m;
-                if ( b != 0 )
-                    DrawPixel(draw_x+xi, draw_y+yi, color);
-                m = m >> 1;
-                if ( m == 0 )
+                ofs += line_size;
+                continue;
+            } else if ( yline >= m_height )
+                break;
+
+            SetPage( yline, yline ); 
+            if ( draw_x >= 0 && draw_x+w < m_width )
+            {
+                //Fast line
+                uint16_t so = ofs;
+                uint8_t m = 0x80;
+                uint8_t d = pgm_read_byte( font_data+so );
+                for ( uint8_t xi = 0; xi < w; ++xi )
                 {
-                    so ++;
-                    m = 0x80;
-                    d = pgm_read_byte(font_data+so);
+                    uint8_t b = d & m;
+                    if ( b != 0 )
+                    {
+                        int16_t xline = draw_x+xi;
+                        SetColumn( xline, xline );
+                        TFT_DATAPIN_SET(0x2C);
+                        TFT_SWAP_CMD_WR
+                        TFT_DATAPIN_SET(hi);
+                        TFT_SWAP_DATA_WR
+                        TFT_DATAPIN_SET(lo);
+                        TFT_SWAP_DATA_WR
+                    }
+                    m = m >> 1;
+                    if ( m == 0 )
+                    {
+                        so ++;
+                        m = 0x80;
+                        d = pgm_read_byte(font_data+so);
+                    }
+                }
+            } else if ( draw_x >= m_width || draw_x+w < 0 )
+            {
+                //no line
+            } else
+            {
+                //Safe line
+                uint16_t so = ofs;
+                uint8_t m = 0x80;
+                uint8_t d = pgm_read_byte( font_data+so );
+                for ( uint8_t xi = 0; xi < w; ++xi )
+                {
+                    int16_t xline = draw_x+xi;
+                    if ( xline >= m_width )
+                        break;
+                    if ( xline >= 0 )
+                    {
+                        uint8_t b = d & m;
+                        if ( b != 0 )
+                        {
+                            SetColumn( xline, xline );
+                            TFT_DATAPIN_SET(0x2C);
+                            TFT_SWAP_CMD_WR
+                            TFT_DATAPIN_SET(hi);
+                            TFT_SWAP_DATA_WR
+                            TFT_DATAPIN_SET(lo);
+                            TFT_SWAP_DATA_WR
+                        }
+                    }
+                    m = m >> 1;
+                    if ( m == 0 )
+                    {
+                        so ++;
+                        m = 0x80;
+                        d = pgm_read_byte(font_data+so);
+                    }
                 }
             }
             ofs += line_size;
         }
 
         x += (int8_t)pgm_read_byte(info+6);
+    }
+}
+
+void Shield_ili9341::DrawTextScale( const String& str, int scale, int16_t x, int16_t y, uint16_t color, const uint8_t* font_data, const glyph_param* font_info )
+{
+    for ( int i = 0; i < str.length(); ++i )
+    {
+        char ch = str.charAt(i);
+        if  ( ch < 32 || ch > 128 )
+            continue;
+        const uint8_t* info = (const uint8_t*)(font_info + ch - 32);
+
+        int16_t draw_x = x + (int8_t)pgm_read_byte(info+4)*scale;
+        int16_t draw_y = y - (int8_t)pgm_read_byte(info+5)*scale;
+
+        uint8_t w = pgm_read_byte(info+2);
+        uint8_t h = pgm_read_byte(info+3);
+
+        uint16_t ofs = pgm_read_word(info+0);
+        uint8_t line_size = (w+7)/8;
+        for ( uint8_t yi = 0; yi < h; ++yi )
+        {
+            int16_t yline = draw_y+yi*scale;
+            if ( yline < 0 )
+            {
+                ofs += line_size;
+                continue;
+            } else if ( yline >= m_height )
+                break;
+
+            {
+                //Safe line
+                uint16_t so = ofs;
+                uint8_t m = 0x80;
+                uint8_t d = pgm_read_byte( font_data+so );
+                for ( uint8_t xi = 0; xi < w; ++xi )
+                {
+                    int16_t xline = draw_x+xi*scale;
+                    if ( xline >= m_width )
+                        break;
+                    if ( xline >= 0 )
+                    {
+                        uint8_t b = d & m;
+                        if ( b != 0 )
+                            DrawRect( xline, yline, xline+scale-1, yline+scale-1, color );
+                    }
+                    m = m >> 1;
+                    if ( m == 0 )
+                    {
+                        so ++;
+                        m = 0x80;
+                        d = pgm_read_byte(font_data+so);
+                    }
+                }
+            }
+            ofs += line_size;
+        }
+
+        x += (int8_t)pgm_read_byte(info+6) * scale;
     }
 }

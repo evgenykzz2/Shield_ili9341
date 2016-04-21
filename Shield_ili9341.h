@@ -93,7 +93,7 @@ public:
   void FillFast( uint8_t color8 );
   void Fill( uint16_t color );
 
-  //void DrawRectFast( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t color8 );
+  void DrawRectFast( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t color8 );
   void DrawRect( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color );
 
   void DrawPixelFast( int16_t x, int16_t y, uint8_t color8 );
@@ -111,5 +111,6 @@ public:
   void StreamPixels( uint16_t color, uint16_t count );
   void StreamPixels8( uint8_t color8, uint16_t count );
 
-  void DrawText( const String& str, int16_t x, int16_t y, uint16_t color, const PROGMEM uint8_t* font_data, const PROGMEM glyph_param* font_info );
+  void DrawText( const String& str, int16_t x, int16_t y, uint16_t color, const uint8_t* font_data, const glyph_param* font_info );
+  void DrawTextScale( const String& str, int scale, int16_t x, int16_t y, uint16_t color, const uint8_t* font_data, const glyph_param* font_info );
 };
