@@ -111,7 +111,10 @@ void loop()
     tft.FillFast( Shield_ili9341::Color8_Black );
     unsigned long time0 = micros();
     for ( int32_t i = 0; i < 1000; ++i )
+    {
       tft.DrawCircle( rand()%tft.Width(), rand()%tft.Height(), rand()%120, rand() );
+      //delay(1000);
+    }
     unsigned long time1 = micros();
     Serial.print("DrawCircle: ");
     Serial.println( time1-time0 );
@@ -121,7 +124,10 @@ void loop()
     tft.FillFast( Shield_ili9341::Color8_Black );
     unsigned long time0 = micros();
     for ( int32_t i = 0; i < 400; ++i )
+    {
       tft.DrawCircleFill( rand()%tft.Width(), rand()%tft.Height(), rand()%120, rand() );
+      //delay(1000);
+    }
     unsigned long time1 = micros();
     Serial.print("DrawCircleFill: ");
     Serial.println( time1-time0 );

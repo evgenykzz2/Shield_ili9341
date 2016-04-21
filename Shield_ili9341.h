@@ -60,6 +60,7 @@ private:
 
   void DrawLine_safe( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color );
   void DrawLine_unsafe( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color );
+  void DrawLine_unsafe_fast( int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint8_t color8 );
 
   void DrawCircle_safe( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
   void DrawCircle_unsafe( int16_t x_center, int16_t y_center, int16_t rad, uint16_t color );
