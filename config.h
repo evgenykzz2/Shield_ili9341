@@ -2,6 +2,9 @@
 
 #if defined(__AVR_ATmega328P__) // Arduino Uno
 
+//generic UNO shield
+/*#if 0
+
 static const int LCDpin[8] = {8, 9, 2, 3, 4, 5, 6, 7};
 
 #define RESET A4
@@ -17,6 +20,31 @@ static const int LCDpin[8] = {8, 9, 2, 3, 4, 5, 6, 7};
 #define TFT_CMD_MODE        PORTC &= ~4;
 #define TFT_DATA_MODE       PORTC |= 4;
 #define TFT_DATAPIN_SET(v)  PORTD=v&0xFC;PORTB=v&3;
+
+#else
+*/
+//Hacked UNO/nano shield
+static const int LCDpin[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+
+#define RESET 12
+#define CS 11
+#define RS 10
+#define WR 9
+#define RD 8
+
+// RD WR RS CS RST
+// 0  1  2  3  4
+// 1  2  4  8 16
+
+#define TFT_SWAP_DATA_WR    PORTB = 1+4+16; PORTB = 1+2+4+16;
+#define TFT_SWAP_CMD_WR     PORTB = 1+16; PORTB = 1+2+16;
+#define TFT_SWAP            PORTB &= ~2;PORTB |= 2;
+#define TFT_SWAP_RD         PORTB &= ~1;PORTB |= 1;
+#define TFT_CMD_MODE        PORTB &= ~4;
+#define TFT_DATA_MODE       PORTB |= 4;
+#define TFT_DATAPIN_SET(v)  PORTD=v;
+
+//#endif
 
 #elif defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) // Mega 1280 & 2560
 
@@ -37,6 +65,7 @@ static const int LCDpin[8] = {22, 23, 24, 25, 26, 27, 28, 29};
 
 // RD WR RS CS RST
 // 1  0  1  0  1
+// 1  2  4  8  16
 
 #elif defined(__SAM3X8E__)  //due
 
