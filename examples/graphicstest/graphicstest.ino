@@ -12,9 +12,9 @@ void setup()
 
 void Transform( float x, float y, float z, const float* mt, float& xt, float& yt, float& zt )
 {
-  xt = mt[0]*x + mt[4]*y + mt[8 ]*z + mt[12];
-  yt = mt[1]*x + mt[5]*y + mt[9 ]*z + mt[13];
-  zt = mt[2]*x + mt[6]*y + mt[10]*z + mt[14];
+  xt = mt[0]*x + mt[4]*y + mt[8 ]*z;// + mt[12];
+  yt = mt[1]*x + mt[5]*y + mt[9 ]*z;// + mt[13];
+  zt = mt[2]*x + mt[6]*y + mt[10]*z;// + mt[14];
 }
 
 void loop()
@@ -134,13 +134,19 @@ void loop()
   }
 
   {
-    unsigned long time0 = micros();
     tft.FillFast( Shield_ili9341::Color8_Black );
-
+    unsigned long time0 = micros();
+    unsigned long time_calc = 0;
+    unsigned long time_draw = 0;
+    
     static const int line_count = 12;
-    static const float g_x[] = { -1.0f,  1.0f,    1.0f, 1.0f,   1.0f, -1.0f,  -1.0f, -1.0f,    -1.0f,  1.0f,    1.0f, 1.0f,   1.0f, -1.0f,  -1.0f, -1.0f,    -1.0f, -1.0f,    1.0f,  1.0f,    1.0f,  1.0f,   -1.0f, -1.0f };
-    static const float g_y[] = { -1.0f, -1.0f,   -1.0f, 1.0f,   1.0f,  1.0f,   1.0f, -1.0f,    -1.0f, -1.0f,   -1.0f, 1.0f,   1.0f,  1.0f,   1.0f, -1.0f,    -1.0f, -1.0f,   -1.0f, -1.0f,    1.0f,  1.0f,    1.0f,  1.0f };
-    static const float g_z[] = { -1.0f, -1.0f,   -1.0f,-1.0f,  -1.0f, -1.0f,  -1.0f, -1.0f,     1.0f,  1.0f,    1.0f, 1.0f,   1.0f,  1.0f,   1.0f,  1.0f,    -1.0f,  1.0f,   -1.0f,  1.0f,   -1.0f,  1.0f,   -1.0f,  1.0f };
+    static const int vertex_count = 8;
+    //                            0       1       2       3          4        5       6        7
+    static const float g_x[] = { -1.0f,   1.0f,   1.0f,  -1.0f,      -1.0f,   1.0f,   1.0f,  -1.0f };
+    static const float g_y[] = { -1.0f,  -1.0f,   1.0f,   1.0f,      -1.0f,  -1.0f,   1.0f,   1.0f };
+    static const float g_z[] = { -1.0f,  -1.0f,  -1.0f,  -1.0f,       1.0f,   1.0f,   1.0f,   1.0f };
+
+    static const int g_index[] = { 0,1,  1,2,  2,3,  3,0,     4,5,  5,6, 6,7,  7,4,   0,4, 1,5, 2,6, 3,7 };
 
     float a = 0.0f;
     float b = 0.0f;
@@ -149,29 +155,28 @@ void loop()
     float wf = tft.Width()/2;
     float hf = tft.Height()/2;
 
-    int16_t draw_x[ line_count*2 ];
-    int16_t draw_y[ line_count*2 ];
+    int16_t draw_x[ vertex_count ];
+    int16_t draw_y[ vertex_count ];
 
-    int16_t draw_x_old[ line_count*2 ];
-    int16_t draw_y_old[ line_count*2 ];
+    int16_t draw_x_old[ vertex_count ];
+    int16_t draw_y_old[ vertex_count ];
 
-    for ( int i = 0; i < line_count; ++i )
+    for ( int i = 0; i < vertex_count; ++i )
     {
-      draw_x_old[i*2+0] = 0;
-      draw_x_old[i*2+1] = 0;
-      draw_y_old[i*2+0] = 0;
-      draw_y_old[i*2+1] = 0;
+      draw_x_old[i] = 0;
+      draw_y_old[i] = 0;
     }
 
     for ( int32_t t = 0; t < 200; ++t )
     {
-        float cosa = cos(a*3.1415f/180.0f);
-        float cosb = cos(b*3.1415f/180.0f);
-        float cosg = cos(c*3.1415f/180.0f);
+        unsigned long t0 = micros();
+        float cosa = cos(a);
+        float cosb = cos(b);
+        float cosg = cos(c);
 
-        float sina = sin(a*3.1415f/180.0f);
-        float sinb = sin(b*3.1415f/180.0f);
-        float sing = sin(c*3.1415f/180.0f);
+        float sina = sin(a);
+        float sinb = sin(b);
+        float sing = sin(c);
 
         float matrix[16];
 
@@ -195,38 +200,47 @@ void loop()
         matrix[14] = 0.0f;
         matrix[15] = 1.0f;
 
-        for ( int i = 0; i < line_count; ++i )
+        for ( int i = 0; i < vertex_count; ++i )
         {
           float xt, yt, zt;
-          Transform( g_x[i*2+0], g_y[i*2+0], g_z[i*2+0], matrix, xt, yt, zt );
-          zt += 3.0f; xt = wf + wf*xt/zt; yt = hf + wf*yt/zt;
-          draw_x[i*2] = (int16_t)xt;
-          draw_y[i*2] = (int16_t)yt;
-
-          Transform( g_x[i*2+1], g_y[i*2+1], g_z[i*2+1], matrix, xt, yt, zt );
-          zt += 3.0f; xt = wf + wf*xt/zt; yt = hf + wf*yt/zt;
-          draw_x[i*2+1] = (int16_t)xt;
-          draw_y[i*2+1] = (int16_t)yt;
+          Transform( g_x[i], g_y[i], g_z[i], matrix, xt, yt, zt );
+          zt = 1.0f/(zt+3.0f); xt = wf + wf*xt*zt; yt = hf + wf*yt*zt;
+          draw_x[i] = (int16_t)xt;
+          draw_y[i] = (int16_t)yt;
         }
 
+        unsigned long t1 = micros();
         for ( int i = 0; i < line_count; ++i )
         {
-          tft.DrawLine( draw_x_old[i*2+0], draw_y_old[i*2+0], draw_x_old[i*2+1], draw_y_old[i*2+1], 0x0000 );
-          tft.DrawLine( draw_x[i*2+0], draw_y[i*2+0], draw_x[i*2+1], draw_y[i*2+1], 0xFFFF );
-          draw_x_old[i*2+0] = draw_x[i*2+0];
-          draw_x_old[i*2+1] = draw_x[i*2+1];
-          draw_y_old[i*2+0] = draw_y[i*2+0];
-          draw_y_old[i*2+1] = draw_y[i*2+1];
+          int a = g_index[i*2];
+          int b = g_index[i*2+1];
+          tft.DrawLine( draw_x_old[a], draw_y_old[a], draw_x_old[b], draw_y_old[b], 0x0000 );
+          tft.DrawLine( draw_x[a], draw_y[a], draw_x[b], draw_y[b], 0xFFFF );
+        }
+        
+        for ( int i = 0; i < vertex_count; ++i )
+        {
+          draw_x_old[i] = draw_x[i];
+          draw_y_old[i] = draw_y[i];
         }
 
-        a += 1.0f;
-        b += 2.0f;
-        c += 3.0f;
+        unsigned long t2 = micros();
+
+        time_calc += t1-t0;
+        time_draw += t2-t1;
+
+        a += 0.02f;
+        b += 0.03f;
+        c += 0.04f;
     }
 
     unsigned long time1 = micros();
     Serial.print("Linear 3d cube: ");
-    Serial.println( time1-time0 );
+    Serial.print( time1-time0 );
+    Serial.print(" Calc: ");
+    Serial.print( time_calc );
+    Serial.print(" Draw: ");
+    Serial.println( time_draw );
   }
 }
 
