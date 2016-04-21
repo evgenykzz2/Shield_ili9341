@@ -30,7 +30,7 @@ static const uint8_t g_font_data[] PROGMEM =
 
 static const glyph_param g_font_info[] PROGMEM =
 {
-  { 0, 1, 1, 0, 0, 3 },
+  { 0, 0, 0, 0, 0, 3 },
   { 0, 1, 8, 0, 8, 2 },
   { 8, 3, 3, 0, 8, 4 },
   { 11, 5, 8, 0, 8, 6 },
