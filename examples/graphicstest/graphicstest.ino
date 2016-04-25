@@ -1,13 +1,17 @@
 #include "Shield_ili9341.h"
 #include "font/arial_14.h"
 
+//#define USE_SERIAL
+
 Shield_ili9341 tft;
 
 void setup()
 {
+  #ifdef USE_SERIAL
   Serial.begin(9600);
-  tft.Init( 320, 240, Shield_ili9341::MemoryAccessControl_Rotate | Shield_ili9341::MemoryAccessControl_FlipX );
-  //tft.Init( 480, 320, Shield_ili9341::MemoryAccessControl_Rotate );
+  #endif
+  //tft.Init( 320, 240, Shield_ili9341::MemoryAccessControl_Rotate | Shield_ili9341::MemoryAccessControl_FlipX );
+  tft.Init( 480, 320, Shield_ili9341::MemoryAccessControl_Rotate );
 }
 
 void Transform( float x, float y, float z, const float* mt, float& xt, float& yt, float& zt )
@@ -25,23 +29,29 @@ void loop()
     for ( int i = 0; i < 10000; ++i )
       tft.DrawText( "Test", rand()%tft.Width(), rand()%tft.Height(), rand(), g_font_data, g_font_info );
     unsigned long time1 = micros();
+    #ifdef USE_SERIAL
     Serial.print("Text: ");
     Serial.println( time1-time0 );
+    #endif
   }
 
   {
     unsigned long time0 = micros();
     tft.FillFast( Shield_ili9341::Color8_Black );
-    
+
+    const String text = "*Move Text*";
+    const int16_t s = 4;
+
     for ( int i = 0; i < tft.Height(); ++i )
     {
-      tft.DrawTextScale( "*Move Text*", 4, i, i, 0xFFFF, g_font_data, g_font_info );
-      tft.DrawTextScale( "*Move Text*", 4, i, i, 0x0, g_font_data, g_font_info );
+      tft.DrawTextScaleBorder( text, s, i, i, 0xFFFF,  1, 0x0, g_font_data, g_font_info );
     }
 
     unsigned long time1 = micros();
+    #ifdef USE_SERIAL
     Serial.print("Move Text: ");
     Serial.println( time1-time0 );
+    #endif
   }
 
   //Fast fill 8bit color
@@ -51,10 +61,12 @@ void loop()
     for ( int i = 0; i < frame_count; ++i )
       tft.FillFast( rand() % 256 );
     unsigned long time1 = micros();
+    #ifdef USE_SERIAL
     Serial.print("Fast fill: frame: ");
     Serial.print( (time1-time0)/frame_count );
     Serial.print(" fps: ");
     Serial.println( 1000000.0f*float(frame_count)/float(time1-time0) );
+    #endif
   }
 
   //Fill 16bit color
@@ -64,10 +76,12 @@ void loop()
     for ( int i = 0; i < frame_count; ++i )
       tft.Fill( rand() );
     unsigned long time1 = micros();
+    #ifdef USE_SERIAL
     Serial.print("Full fill: frame: ");
     Serial.print( (time1-time0)/frame_count );
     Serial.print(" fps: ");
     Serial.println( 1000000.0f*float(frame_count)/float(time1-time0) );
+    #endif
   }
 
   //Lines
@@ -82,8 +96,10 @@ void loop()
       }
     }
     unsigned long time1 = micros();
+    #ifdef USE_SERIAL
     Serial.print("Lines: ");
     Serial.println( time1-time0 );
+    #endif
   }
 
   {
@@ -92,8 +108,10 @@ void loop()
     for ( int32_t i = 0; i < 40000; ++i )
       tft.DrawPixel_unsafe( rand()%tft.Width(), rand()%tft.Height(), rand() );
     unsigned long time1 = micros();
+    #ifdef USE_SERIAL
     Serial.print("Pixels: ");
     Serial.println( time1-time0 );
+    #endif
   }
 
   {
@@ -103,8 +121,10 @@ void loop()
       //tft.DrawRect( rand()%tft.Width(), rand()%tft.Height(), rand()%tft.Width(), rand()%tft.Height(), rand() );
       tft.DrawRectFast( rand()%tft.Width(), rand()%tft.Height(), rand()%tft.Width(), rand()%tft.Height(), rand() );
     unsigned long time1 = micros();
+    #ifdef USE_SERIAL
     Serial.print("DrawRect: ");
     Serial.println( time1-time0 );
+    #endif
   }
   
   {
@@ -116,8 +136,10 @@ void loop()
       //delay(1000);
     }
     unsigned long time1 = micros();
+    #ifdef USE_SERIAL
     Serial.print("DrawCircle: ");
     Serial.println( time1-time0 );
+    #endif
   }
 
   {
@@ -129,8 +151,10 @@ void loop()
       //delay(1000);
     }
     unsigned long time1 = micros();
+    #ifdef USE_SERIAL
     Serial.print("DrawCircleFill: ");
     Serial.println( time1-time0 );
+    #endif
   }
 
   {
@@ -235,12 +259,14 @@ void loop()
     }
 
     unsigned long time1 = micros();
+    #ifdef USE_SERIAL
     Serial.print("Linear 3d cube: ");
     Serial.print( time1-time0 );
     Serial.print(" Calc: ");
     Serial.print( time_calc );
     Serial.print(" Draw: ");
     Serial.println( time_draw );
+    #endif
   }
 }
 

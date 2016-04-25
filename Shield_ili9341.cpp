@@ -1089,6 +1089,41 @@ void Shield_ili9341::StreamPixels8( uint8_t color8, uint16_t count )
     }
 }
 
+void Shield_ili9341::TextRect( const String& str, int16_t& rect_left, int16_t& rect_top, int16_t& rect_right, int16_t& rect_bot, const uint8_t* font_data, const glyph_param* font_info )
+{
+    rect_left = 999;
+    rect_right = 0;
+    rect_top = -999;
+    rect_bot = 999;
+    int16_t x = 0;
+    for ( int i = 0; i < str.length(); ++i )
+    {
+        char ch = str.charAt(i);
+        if  ( ch < 32 || ch > 128 )
+            continue;
+        const uint8_t* info = (const uint8_t*)(font_info + ch - 32);
+
+        int16_t draw_x = x + (int8_t)pgm_read_byte(info+4);
+        int16_t draw_y = -(int8_t)pgm_read_byte(info+5);
+
+        uint8_t w = pgm_read_byte(info+2);
+        uint8_t h = pgm_read_byte(info+3);
+
+
+        if ( draw_x < rect_left )
+            rect_left = draw_x;
+
+        rect_right = draw_x+w;
+
+        if ( draw_y < rect_bot )
+            rect_bot = draw_y;
+        if ( draw_y+h > rect_top )
+            rect_top = draw_y+h;
+
+        x += (int8_t)pgm_read_byte(info+6);
+    }
+}
+
 void Shield_ili9341::DrawText( const String& str, int16_t x, int16_t y, uint16_t color, const uint8_t* font_data, const glyph_param* font_info )
 {
     uint8_t hi = color >> 8;
@@ -1249,4 +1284,93 @@ void Shield_ili9341::DrawTextScale( const String& str, int scale, int16_t x, int
 
         x += (int8_t)pgm_read_byte(info+6) * scale;
     }
+}
+
+
+void Shield_ili9341::DrawTextScaleBorder( const String& str, int scale, int16_t x, int16_t y, uint16_t color, int16_t border_size, uint16_t border_color, const uint8_t* font_data, const glyph_param* font_info )
+{
+    int16_t rect_left, rect_top, rect_right, rect_bot;
+    TextRect( str, rect_left, rect_top, rect_right, rect_bot, font_data, font_info );
+
+    rect_bot = rect_bot*scale + y - border_size;
+    rect_top = rect_top*scale + y + border_size;
+    rect_right = rect_right*scale + x + border_size;
+
+    int16_t x_last_draw = x-border_size-1;
+
+    for ( int i = 0; i < str.length(); ++i )
+    {
+        char ch = str.charAt(i);
+        if  ( ch < 32 || ch > 128 )
+            continue;
+        const uint8_t* info = (const uint8_t*)(font_info + ch - 32);
+
+        int16_t draw_x = x + (int8_t)pgm_read_byte(info+4)*scale;
+        int16_t draw_y = y - (int8_t)pgm_read_byte(info+5)*scale;
+
+        uint8_t w = pgm_read_byte(info+2);
+        uint8_t h = pgm_read_byte(info+3);
+
+        if ( w == 0 && h == 0 )
+        {
+
+        } else
+        {
+            if ( draw_x > x_last_draw+1 )
+                DrawRect( x_last_draw+1, rect_bot, draw_x-1, rect_top-1, border_color );
+            x_last_draw = draw_x+w*scale-1;
+            if ( draw_y > rect_bot )
+                DrawRect( draw_x, rect_bot, draw_x+w*scale-1, draw_y-1, border_color );
+
+            if ( draw_y+h*scale < rect_top )
+                DrawRect( draw_x, draw_y+h*scale, draw_x+w*scale-1, rect_top-1, border_color );
+
+            uint16_t ofs = pgm_read_word(info+0);
+            uint8_t line_size = (w+7)/8;
+            for ( uint8_t yi = 0; yi < h; ++yi )
+            {
+                int16_t yline = draw_y+yi*scale;
+                if ( yline < 0 )
+                {
+                    ofs += line_size;
+                    continue;
+                } else if ( yline >= m_height )
+                    break;
+
+                {
+                    //Safe line
+                    uint16_t so = ofs;
+                    uint8_t m = 0x80;
+                    uint8_t d = pgm_read_byte( font_data+so );
+                    for ( uint8_t xi = 0; xi < w; ++xi )
+                    {
+                        int16_t xline = draw_x+xi*scale;
+                        if ( xline >= m_width )
+                            break;
+                        if ( xline >= 0 )
+                        {
+                            uint8_t b = d & m;
+                            if ( b != 0 )
+                                DrawRect( xline, yline, xline+scale-1, yline+scale-1, color );
+                            else
+                                DrawRect( xline, yline, xline+scale-1, yline+scale-1, border_color );
+                        }
+                        m = m >> 1;
+                        if ( m == 0 )
+                        {
+                            so ++;
+                            m = 0x80;
+                            d = pgm_read_byte(font_data+so);
+                        }
+                    }
+                }
+                ofs += line_size;
+            }
+        }
+
+        x += (int8_t)pgm_read_byte(info+6) * scale;
+    }
+
+    if ( rect_right > x_last_draw+1 )
+        DrawRect( x_last_draw+1, rect_bot, rect_right-1, rect_top-1, border_color );
 }
