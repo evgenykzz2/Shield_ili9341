@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include "Arduino.h"
 #include <avr/pgmspace.h>
 
 struct glyph_param
