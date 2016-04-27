@@ -15,8 +15,6 @@ struct glyph_param
 
 class Shield_ili9341
 {
-  void SendCmd( uint8_t cmd );
-  void SendData( uint8_t data );
 public:
     enum EMemoryAccessControl
     {
@@ -49,12 +47,15 @@ public:
         Color_Cyan = 0x07FF
     };
 
-private:
+protected:
   uint8_t m_mode;
   int16_t m_tft_width;
   int16_t m_tft_height;
   int16_t m_width;
   int16_t m_height;
+
+  void SendCmd( uint8_t cmd );
+  void SendData( uint8_t data );
 
   void DrawHLine_safe( int16_t x0, int16_t y0, int16_t x1, uint16_t color );
   void DrawHLine_unsafe( int16_t x0, int16_t y0, int16_t x1, uint16_t color );
