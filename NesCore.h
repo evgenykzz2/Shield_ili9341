@@ -2,6 +2,19 @@
 
 #include "Shield_ili9341.h"
 
+class NesOffscreen
+{
+    uint8_t* m_buffer;
+    int16_t  m_width;
+    int16_t  m_height;
+
+    friend class NesCore;
+public:
+    NesOffscreen();
+    ~NesOffscreen();
+    void Init( int16_t width, int16_t height );
+};
+
 class NesCore : public Shield_ili9341
 {
     static const uint8_t g_palette[64*2] PROGMEM;
@@ -15,8 +28,16 @@ class NesCore : public Shield_ili9341
     uint8_t m_palette_id;
     uint8_t m_color[8];
 
+    uint8_t m_palette_ofs_id;
+    uint8_t m_color_ofs[4];
+
+    void SetPaletteOffScreenId( uint8_t id );
+
     void DrawChrSafe( int16_t x, int16_t y, uint16_t id, uint8_t mirror );
     void DrawChrUnsafe( int16_t x, int16_t y, uint16_t id, uint8_t mirror );
+
+    void DrawOffScreenChrSafe( NesOffscreen& offscreen, int16_t x, int16_t y, uint16_t id, uint8_t mirror );
+    void DrawOffScreenChrUnsafe( NesOffscreen& offscreen, int16_t x, int16_t y, uint16_t id, uint8_t mirror );
 public:
     enum EMirror
     {
@@ -33,4 +54,8 @@ public:
 
     void InitBlock( const uint8_t* block_id, const uint8_t* block_palette );
     void DrawBlock( int16_t x, int16_t y, uint8_t block_id );
+
+    void DrawOffScreenChr( NesOffscreen& offscreen, int16_t x, int16_t y, uint16_t id, uint8_t pal, uint8_t mirror );
+    //void DrawOffscreenChrAlpha( NesOffscreen& offscreen, int16_t x, int16_t y, uint16_t id, uint8_t pal, uint8_t mirror );
+    void DrawOffscreenBuffer( NesOffscreen& offscreen, int16_t x, int16_t y );
 };
