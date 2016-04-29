@@ -1,6 +1,8 @@
 #include "NesCore.h"
 #include "config.h"
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 const uint8_t NesCore::g_palette[64*2] PROGMEM =
 {
     0x73, 0xae, 0x20, 0x71, 0x00, 0x15, 0x40, 0x13, 0x88, 0x0e, 0xa8, 0x02, 0xa0, 0x00, 0x78, 0x60, 0x41, 0xe0, 0x02, 0xe0, 0x02, 0x20, 0x01, 0xe2, 0x19, 0xeb, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xbd, 0x97, 0x03, 0x7d, 0x21, 0x7d, 0x80, 0x1e, 0xb8, 0x17, 0xe0, 0x0b, 0xd9, 0x60, 0xca, 0xe1, 0x8b, 0x60, 0x04, 0xe0, 0x05, 0x60, 0x04, 0x67, 0x04, 0x71, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
@@ -25,6 +27,25 @@ void NesOffscreen::Init( int16_t width, int16_t height )
         delete [] m_buffer;
     m_buffer = new uint8_t[m_width*m_height];
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+NesCore::FpsController::FpsController( uint8_t fps ) : m_time( micros() ), m_delta( (uint32_t)1000000/(uint32_t)fps )
+{}
+
+NesCore::FpsController::FrameWait()
+{
+    uint64_t now = micros();
+    uint64_t next = m_time + m_delta;
+    if ( next > now )
+    {
+        uint64_t delta = next - now;
+        if ( delta < 1000000 )
+            delayMicroseconds(delta);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 NesCore::NesCore() :
     m_charset(0), m_palette(0),

@@ -25,7 +25,7 @@ void Shield_ili9341::Init( int16_t tft_width, int16_t tft_height, uint8_t mode )
   pinMode(RS, OUTPUT);
   pinMode(WR, OUTPUT);
   pinMode(RD, OUTPUT);
-  for ( int i = 0; i < 8; ++i )
+  for ( int i = 0; i < TFT_PIN_COUNT; ++i )
     pinMode(LCDpin[i], OUTPUT);
   digitalWrite( RD, HIGH );
   digitalWrite( WR, HIGH );

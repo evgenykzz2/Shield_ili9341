@@ -5,7 +5,8 @@
 //generic UNO shield
 /*#if 0
 
-static const int LCDpin[8] = {8, 9, 2, 3, 4, 5, 6, 7};
+#define TFT_PIN_COUNT 8
+static const int LCDpin[TFT_PIN_COUNT] = {8, 9, 2, 3, 4, 5, 6, 7};
 
 #define RESET A4
 #define CS A3
@@ -23,8 +24,10 @@ static const int LCDpin[8] = {8, 9, 2, 3, 4, 5, 6, 7};
 
 #else
 */
+
 //Hacked UNO/nano shield
-static const int LCDpin[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+#define TFT_PIN_COUNT 8
+static const int LCDpin[TFT_PIN_COUNT] = {0, 1, 2, 3, 4, 5, 6, 7};
 
 #define RESET 12
 #define CS 11
@@ -48,7 +51,35 @@ static const int LCDpin[8] = {0, 1, 2, 3, 4, 5, 6, 7};
 
 #elif defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) // Mega 1280 & 2560
 
-static const int LCDpin[8] = {22, 23, 24, 25, 26, 27, 28, 29};
+#if 0
+
+#define TFT_PIN_COUNT 16
+//                                        0   1   2   3   4   5   6   7      8  9   10  11  12  13  14  15
+//                                                     PC                           PA
+static const int LCDpin[TFT_PIN_COUNT] = {37, 36, 35, 34, 33, 32, 31, 30,   22, 23, 24, 25, 26, 27, 28, 29};
+
+#define RESET 41
+#define CS 40
+#define RS 38
+#define WR 39
+#define RD 42
+
+#define TFT_SWAP_DATA_WR    PORTG = 1; PORTG = 1+4;
+#define TFT_SWAP_CMD_WR     PORTG = 1; PORTG = 1+4;
+#define TFT_SWAP            PORTG &= ~4; PORTG |= 4;
+#define TFT_CMD_MODE        PORTD &= ~128;
+#define TFT_DATA_MODE       PORTD |= 128;
+#define TFT_DATAPIN_SET(v)  PORTA=v;
+
+// RD  WR RS  CS RST
+// L7  G2 D7  G1 G0
+// 128 4  128 2  1
+
+
+#else
+
+#define TFT_PIN_COUNT 8
+static const int LCDpin[TFT_PIN_COUNT] = {22, 23, 24, 25, 26, 27, 28, 29};
 
 #define RESET 33
 #define CS 34
@@ -63,13 +94,16 @@ static const int LCDpin[8] = {22, 23, 24, 25, 26, 27, 28, 29};
 #define TFT_DATA_MODE       PORTC |= 4;
 #define TFT_DATAPIN_SET(v)  PORTA=v;
 
+#endif
+
 // RD WR RS CS RST
 // 1  0  1  0  1
 // 1  2  4  8  16
 
 #elif defined(__SAM3X8E__)  //due
 
-static const int LCDpin[8] = {25, 26, 27, 28, 14, 15, 29, 11};
+#define TFT_PIN_COUNT 8
+static const int LCDpin[TFT_PIN_COUNT] = {25, 26, 27, 28, 14, 15, 29, 11};
 
 #define RESET 33
 #define CS 34
@@ -89,7 +123,8 @@ static const int LCDpin[8] = {25, 26, 27, 28, 14, 15, 29, 11};
 
 #elif defined(ESP8266)
 
-static const int LCDpin[8] = {D3, D10, D4, D9, D2, D1, D6, D7};
+#define TFT_PIN_COUNT 8
+static const int LCDpin[TFT_PIN_COUNT] = {D3, D10, D4, D9, D2, D1, D6, D7};
 
 #define RESET D0
 #define CS D0

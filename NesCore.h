@@ -17,6 +17,22 @@ public:
 
 class NesCore : public Shield_ili9341
 {
+public:
+    class FpsController
+    {
+        uint64_t m_time;
+        uint32_t m_delta;
+    public:
+        FpsController( uint8_t fps );
+        void FrameWait();
+    };
+
+    enum EMirror
+    {
+        MirrorH = 1,
+        MirrorV = 2
+    };
+protected:
     static const uint8_t g_palette[64*2] PROGMEM;
 
     const uint8_t* m_charset;
@@ -38,12 +54,7 @@ class NesCore : public Shield_ili9341
 
     void DrawOffScreenChrSafe( NesOffscreen& offscreen, int16_t x, int16_t y, uint16_t id, uint8_t mirror );
     void DrawOffScreenChrUnsafe( NesOffscreen& offscreen, int16_t x, int16_t y, uint16_t id, uint8_t mirror );
-public:
-    enum EMirror
-    {
-        MirrorH = 1,
-        MirrorV = 2
-    };
+
 public:
     NesCore();
 
