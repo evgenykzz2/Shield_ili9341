@@ -33,7 +33,7 @@ void NesOffscreen::Init( int16_t width, int16_t height )
 NesCore::FpsController::FpsController( uint8_t fps ) : m_time( micros() ), m_delta( (uint32_t)1000000/(uint32_t)fps )
 {}
 
-NesCore::FpsController::FrameWait()
+void NesCore::FpsController::FrameWait()
 {
     uint64_t now = micros();
     uint64_t next = m_time + m_delta;
