@@ -3,7 +3,7 @@
 #if defined(__AVR_ATmega328P__) // Arduino Uno
 
 //generic UNO shield
-/*#if 0
+#if 1
 
 #define TFT_PIN_COUNT 8
 static const int LCDpin[TFT_PIN_COUNT] = {8, 9, 2, 3, 4, 5, 6, 7};
@@ -23,7 +23,6 @@ static const int LCDpin[TFT_PIN_COUNT] = {8, 9, 2, 3, 4, 5, 6, 7};
 #define TFT_DATAPIN_SET(v)  PORTD=v&0xFC;PORTB=v&3;
 
 #else
-*/
 
 //Hacked UNO/nano shield
 #define TFT_PIN_COUNT 8
@@ -47,7 +46,7 @@ static const int LCDpin[TFT_PIN_COUNT] = {0, 1, 2, 3, 4, 5, 6, 7};
 #define TFT_DATA_MODE       PORTB |= 4;
 #define TFT_DATAPIN_SET(v)  PORTD=v;
 
-//#endif
+#endif
 
 #elif defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) // Mega 1280 & 2560
 
