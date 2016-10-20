@@ -2,7 +2,7 @@
 
 #if defined(__AVR_ATmega328P__) // Arduino Uno
 
-//generic UNO shield
+//generic china UNO shield
 #if 1
 
 #define TFT_PIN_COUNT 8
@@ -21,6 +21,9 @@ static const int LCDpin[TFT_PIN_COUNT] = {8, 9, 2, 3, 4, 5, 6, 7};
 #define TFT_CMD_MODE        PORTC &= ~4;
 #define TFT_DATA_MODE       PORTC |= 4;
 #define TFT_DATAPIN_SET(v)  PORTD=v&0xFC;PORTB=v&3;
+#define TFT_DATAPIN_LO_HI
+#define TFT_DATAPIN_SET_LO(v)  PORTB=v&3;
+#define TFT_DATAPIN_SET_HI(v)  PORTD=v&0xFC;
 
 #else
 
@@ -93,11 +96,11 @@ static const int LCDpin[TFT_PIN_COUNT] = {22, 23, 24, 25, 26, 27, 28, 29};
 #define TFT_DATA_MODE       PORTC |= 4;
 #define TFT_DATAPIN_SET(v)  PORTA=v;
 
-#endif
-
 // RD WR RS CS RST
 // 1  0  1  0  1
 // 1  2  4  8  16
+
+#endif
 
 #elif defined(__SAM3X8E__)  //due
 

@@ -1065,6 +1065,178 @@ void Shield_ili9341::StreamPixels( uint16_t color, uint16_t count )
     }
 }
 
+void Shield_ili9341::StreamPixels_64( uint16_t color )
+{
+    uint8_t hi = color >> 8;
+    uint8_t lo = color & 0xFF;
+
+#ifdef TFT_DATAPIN_LO_HI
+    if ( (uint8_t)(lo&3) == (uint8_t)(hi&3) )
+    {
+        TFT_DATAPIN_SET_LO(lo);
+        for ( uint8_t i = 0; i < 16; ++i )
+        {
+            TFT_DATAPIN_SET_HI(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_HI(lo);
+            TFT_SWAP_DATA_WR
+
+            TFT_DATAPIN_SET_HI(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_HI(lo);
+            TFT_SWAP_DATA_WR
+
+            TFT_DATAPIN_SET_HI(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_HI(lo);
+            TFT_SWAP_DATA_WR
+
+            TFT_DATAPIN_SET_HI(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_HI(lo);
+            TFT_SWAP_DATA_WR
+        }
+    } else if ( (uint8_t)(lo&0xFC) == (uint8_t)(hi&0xFC) )
+    {
+        TFT_DATAPIN_SET_HI(hi);
+        for ( uint8_t i = 0; i < 16; ++i )
+        {
+            TFT_DATAPIN_SET_LO(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_LO(lo);
+            TFT_SWAP_DATA_WR
+
+            TFT_DATAPIN_SET_LO(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_LO(lo);
+            TFT_SWAP_DATA_WR
+
+            TFT_DATAPIN_SET_LO(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_LO(lo);
+            TFT_SWAP_DATA_WR
+
+            TFT_DATAPIN_SET_LO(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_LO(lo);
+            TFT_SWAP_DATA_WR
+        }
+    } else
+#endif
+    {
+    //Full
+    for ( uint8_t i = 0; i < 16; ++i )
+    {
+        TFT_DATAPIN_SET(hi);
+        TFT_SWAP_DATA_WR
+        TFT_DATAPIN_SET(lo);
+        TFT_SWAP_DATA_WR
+
+        TFT_DATAPIN_SET(hi);
+        TFT_SWAP_DATA_WR
+        TFT_DATAPIN_SET(lo);
+        TFT_SWAP_DATA_WR
+
+        TFT_DATAPIN_SET(hi);
+        TFT_SWAP_DATA_WR
+        TFT_DATAPIN_SET(lo);
+        TFT_SWAP_DATA_WR
+
+        TFT_DATAPIN_SET(hi);
+        TFT_SWAP_DATA_WR
+        TFT_DATAPIN_SET(lo);
+        TFT_SWAP_DATA_WR
+    }
+
+    }
+}
+
+void Shield_ili9341::StreamPixels_256( uint16_t color )
+{
+    uint8_t hi = color >> 8;
+    uint8_t lo = color & 0xFF;
+
+#ifdef TFT_DATAPIN_LO_HI
+    if ( (uint8_t)(lo&3) == (uint8_t)(hi&3) )
+    {
+        TFT_DATAPIN_SET_LO(lo);
+        for ( uint8_t i = 0; i < 64; ++i )
+        {
+            TFT_DATAPIN_SET_HI(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_HI(lo);
+            TFT_SWAP_DATA_WR
+
+            TFT_DATAPIN_SET_HI(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_HI(lo);
+            TFT_SWAP_DATA_WR
+
+            TFT_DATAPIN_SET_HI(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_HI(lo);
+            TFT_SWAP_DATA_WR
+
+            TFT_DATAPIN_SET_HI(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_HI(lo);
+            TFT_SWAP_DATA_WR
+        }
+    } else if ( (uint8_t)(lo&0xFC) == (uint8_t)(hi&0xFC) )
+    {
+        TFT_DATAPIN_SET_HI(hi);
+        for ( uint8_t i = 0; i < 64; ++i )
+        {
+            TFT_DATAPIN_SET_LO(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_LO(lo);
+            TFT_SWAP_DATA_WR
+
+            TFT_DATAPIN_SET_LO(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_LO(lo);
+            TFT_SWAP_DATA_WR
+
+            TFT_DATAPIN_SET_LO(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_LO(lo);
+            TFT_SWAP_DATA_WR
+
+            TFT_DATAPIN_SET_LO(hi);
+            TFT_SWAP_DATA_WR
+            TFT_DATAPIN_SET_LO(lo);
+            TFT_SWAP_DATA_WR
+        }
+    } else
+#endif
+    {
+    //Full
+    for ( uint8_t i = 0; i < 64; ++i )
+    {
+        TFT_DATAPIN_SET(hi);
+        TFT_SWAP_DATA_WR
+        TFT_DATAPIN_SET(lo);
+        TFT_SWAP_DATA_WR
+
+        TFT_DATAPIN_SET(hi);
+        TFT_SWAP_DATA_WR
+        TFT_DATAPIN_SET(lo);
+        TFT_SWAP_DATA_WR
+
+        TFT_DATAPIN_SET(hi);
+        TFT_SWAP_DATA_WR
+        TFT_DATAPIN_SET(lo);
+        TFT_SWAP_DATA_WR
+
+        TFT_DATAPIN_SET(hi);
+        TFT_SWAP_DATA_WR
+        TFT_DATAPIN_SET(lo);
+        TFT_SWAP_DATA_WR
+    }
+
+    }
+}
+
 void Shield_ili9341::StreamPixels8( uint8_t color8, uint16_t count )
 {
     TFT_DATAPIN_SET(color8);
@@ -1088,6 +1260,69 @@ void Shield_ili9341::StreamPixels8( uint8_t color8, uint16_t count )
         i ++;
     }
 }
+
+void Shield_ili9341::StreamPixels8_64( uint8_t color8 )
+{
+    TFT_DATAPIN_SET(color8);
+    for ( uint8_t i = 0; i < 8; ++i )
+    {
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+    }
+}
+
+void Shield_ili9341::StreamPixels8_256( uint8_t color8 )
+{
+    TFT_DATAPIN_SET(color8);
+    for ( uint8_t i = 0; i < 32; ++i )
+    {
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+
+        TFT_SWAP_DATA_WR
+        TFT_SWAP_DATA_WR
+    }
+}
+
 
 void Shield_ili9341::TextRect( const String& str, int16_t& rect_left, int16_t& rect_top, int16_t& rect_right, int16_t& rect_bot, const uint8_t* font_data, const glyph_param* font_info )
 {
