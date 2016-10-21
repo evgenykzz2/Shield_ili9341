@@ -1037,6 +1037,14 @@ void Shield_ili9341::StreamStart()
     TFT_SWAP_CMD_WR
 }
 
+void Shield_ili9341::StreamPixel16( uint8_t lo, uint8_t hi )
+{
+    TFT_DATAPIN_SET(hi);
+    TFT_SWAP_DATA_WR
+    TFT_DATAPIN_SET(lo);
+    TFT_SWAP_DATA_WR
+}
+
 void Shield_ili9341::StreamPixel( uint16_t color )
 {
     TFT_DATAPIN_SET(color >> 8);

@@ -110,6 +110,7 @@ public:
 
   void StreamStart();
   void StreamPixel( uint16_t color );
+  void StreamPixel16( uint8_t lo, uint8_t hi );
   void StreamPixel8( uint8_t color8 );
 
   void StreamPixels( uint16_t color, uint16_t count );
