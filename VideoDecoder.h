@@ -13,4 +13,6 @@ public:
 
     void Decode8x8_cnt16( uint8_t l0, uint8_t h0,   uint8_t l1, uint8_t h1,   uint8_t c0 );
     void Decode8x8_Primitive4x2( uint8_t l0, uint8_t h0,   uint8_t l1, uint8_t h1,  uint8_t v );
+
+    void Decode8x8_Gradient( uint16_t color );
 };

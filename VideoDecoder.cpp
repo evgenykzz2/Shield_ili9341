@@ -327,3 +327,15 @@ void VideoDecoder::Decode8x8_cnt16( uint8_t l0, uint8_t h0,   uint8_t l1, uint8_
     { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR 
       TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR }
 }
+
+void VideoDecoder::Decode8x8_Gradient( uint16_t color )
+{
+    for ( uint8_t y = 0; y < 8; ++y )
+    {
+        for ( uint8_t x = 0; x < 8; ++x )
+        {
+            TFT_DATAPIN_SET(color >> 8); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(color & 0xFF); TFT_SWAP_DATA_WR
+        }
+        color += 1 + 64 + 2048;
+    }
+}
