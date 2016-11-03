@@ -360,6 +360,42 @@ void VideoDecoder::Decode8x8_monoP16( uint8_t l0, uint8_t h0,   uint8_t l1, uint
     }
 }
 
+void VideoDecoder::Decode8x8_bin4x( const uint8_t* color, const uint8_t* bin )
+{
+    for ( uint8_t y = 0; y < 8; ++y )
+    {
+        uint8_t c;
+
+        c = (bin[0] & 0x3) << 1;
+        { TFT_DATAPIN_SET( color[c+1] ); TFT_SWAP_DATA_WR TFT_DATAPIN_SET( color[c] ); TFT_SWAP_DATA_WR }
+
+        c = (bin[0] & 0xC) >> 1;
+        { TFT_DATAPIN_SET( color[c+1] ); TFT_SWAP_DATA_WR TFT_DATAPIN_SET( color[c] ); TFT_SWAP_DATA_WR }
+
+        c = (bin[0] & 0x30) >> 3;
+        { TFT_DATAPIN_SET( color[c+1] ); TFT_SWAP_DATA_WR TFT_DATAPIN_SET( color[c] ); TFT_SWAP_DATA_WR }
+
+        c = (bin[0] & 0xC0) >> 5;
+        { TFT_DATAPIN_SET( color[c+1] ); TFT_SWAP_DATA_WR TFT_DATAPIN_SET( color[c] ); TFT_SWAP_DATA_WR }
+
+        bin ++;
+
+        c = (bin[0] & 0x3) << 1;
+        { TFT_DATAPIN_SET( color[c+1] ); TFT_SWAP_DATA_WR TFT_DATAPIN_SET( color[c] ); TFT_SWAP_DATA_WR }
+
+        c = (bin[0] & 0xC) >> 1;
+        { TFT_DATAPIN_SET( color[c+1] ); TFT_SWAP_DATA_WR TFT_DATAPIN_SET( color[c] ); TFT_SWAP_DATA_WR }
+
+        c = (bin[0] & 0x30) >> 3;
+        { TFT_DATAPIN_SET( color[c+1] ); TFT_SWAP_DATA_WR TFT_DATAPIN_SET( color[c] ); TFT_SWAP_DATA_WR }
+
+        c = (bin[0] & 0xC0) >> 5;
+        { TFT_DATAPIN_SET( color[c+1] ); TFT_SWAP_DATA_WR TFT_DATAPIN_SET( color[c] ); TFT_SWAP_DATA_WR }
+
+        bin ++;
+    }
+}
+
 void VideoDecoder::Decode8x8_Primitive4x2( uint8_t l0, uint8_t h0,   uint8_t l1, uint8_t h1,  uint8_t v )
 {
     if ( (v & 1) != 0 )
