@@ -1,7 +1,9 @@
 ﻿#include "config.h"
 #include "Shield_ili9341.h"
 
-Shield_ili9341::Shield_ili9341() : m_mode(0), m_tft_width(0), m_tft_height(0), m_width(0), m_height(0)
+Shield_ili9341::Shield_ili9341() :
+    m_mode(0), m_tft_width(0), m_tft_height(0), m_width(0), m_height(0),
+    m_touch_min_x(0), m_touch_max_x(1023), m_touch_min_y(0), m_touch_max_y(1023)
 {}
 
 int16_t Shield_ili9341::Width() const
@@ -1733,4 +1735,93 @@ void Shield_ili9341::DrawTextScaleBorder( const String& str, int scale, int16_t 
 
     if ( rect_right > x_last_draw+1 )
         DrawRect( x_last_draw+1, rect_bot, rect_right-1, rect_top-1, border_color );
+}
+
+void Shield_ili9341::TouchRead( int16_t& x, int16_t& y, int16_t& z )
+{
+    pinMode(TOUCH_YP, INPUT);
+    pinMode(TOUCH_YM, INPUT);
+    digitalWrite(TOUCH_YP, LOW);
+    digitalWrite(TOUCH_YM, LOW);
+
+    pinMode(TOUCH_XP, OUTPUT);
+    digitalWrite(TOUCH_XP, HIGH);
+    pinMode(TOUCH_XM, OUTPUT);
+    digitalWrite(TOUCH_XM, LOW);
+
+    y = analogRead(TOUCH_YP);
+
+    pinMode(TOUCH_XP, INPUT);
+    pinMode(TOUCH_XM, INPUT);
+    digitalWrite(TOUCH_XP, LOW);
+    digitalWrite(TOUCH_XM, LOW);
+
+    pinMode(TOUCH_YP, OUTPUT);
+    digitalWrite(TOUCH_YP, HIGH);
+    pinMode(TOUCH_YM, OUTPUT);
+    digitalWrite(TOUCH_YM, LOW);
+
+    x = analogRead(TOUCH_XM);
+
+    // Set X+ to ground
+    pinMode(TOUCH_XP, OUTPUT);
+    digitalWrite(TOUCH_XP, LOW);
+
+    // Set Y- to VCC
+    pinMode(TOUCH_YM, OUTPUT);
+    digitalWrite(TOUCH_YM, HIGH); 
+
+    // Hi-Z X- and Y+
+    digitalWrite(TOUCH_XM, LOW);
+    pinMode(TOUCH_XM, INPUT);
+    digitalWrite(TOUCH_YP, LOW);
+    pinMode(TOUCH_YP, INPUT);
+
+    int16_t z1 = analogRead(TOUCH_XM);
+    int16_t z2 = analogRead(TOUCH_YP);
+
+    z = (z2-z1);
+
+#ifdef TOUCH_CONFICT
+    pinMode(TOUCH_YP, OUTPUT);
+    pinMode(TOUCH_YM, OUTPUT);
+    pinMode(TOUCH_XP, OUTPUT);
+    pinMode(TOUCH_XM, OUTPUT);
+#endif
+
+}
+
+void Shield_ili9341::TouchSetColibration( int16_t x_min, int16_t x_max, int16_t y_min, int16_t y_max )
+{
+    m_touch_min_x = x_min;
+    m_touch_max_x = x_max;
+    m_touch_min_y = y_min;
+    m_touch_max_y = y_max;
+}
+
+void Shield_ili9341::TouchMap( int16_t& x, int16_t& y )
+{
+    if ( m_touch_min_x < m_touch_max_x )
+    {
+        if (x < m_touch_min_x) x = m_touch_min_x;
+        if (x > m_touch_max_x) x = m_touch_max_x;
+        x = (int32_t)(x-m_touch_min_x)*m_tft_width/(m_touch_max_x-m_touch_min_x);
+    } else
+    {
+        if (x < m_touch_max_x) x = m_touch_max_x;
+        if (x > m_touch_min_x) x = m_touch_min_x;
+        x = m_tft_width - (int32_t)(x-m_touch_max_x)*m_tft_width/(m_touch_min_x-m_touch_max_x);
+    }
+    
+    if ( m_touch_min_y < m_touch_max_y )
+    {
+        if (y < m_touch_min_y) y = m_touch_min_y;
+        if (y > m_touch_max_y) y = m_touch_max_y;
+        y = (int32_t)(y-m_touch_min_y)*m_tft_height/(m_touch_max_y-m_touch_min_y);
+    } else
+    {
+        if (y < m_touch_max_y) y = m_touch_max_y;
+        if (y > m_touch_min_y) y = m_touch_min_y;
+        y = m_tft_height - (int32_t)(y-m_touch_max_y)*m_tft_height/(m_touch_min_y-m_touch_max_y);
+    }
 }

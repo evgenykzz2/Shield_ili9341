@@ -54,6 +54,11 @@ protected:
   int16_t m_width;
   int16_t m_height;
 
+  int16_t m_touch_min_x;
+  int16_t m_touch_max_x;
+  int16_t m_touch_min_y;
+  int16_t m_touch_max_y;
+
   void SendCmd( uint8_t cmd );
   void SendData( uint8_t data );
 
@@ -128,4 +133,9 @@ public:
   void DrawTextScaleBorder( const String& str, int scale, int16_t x, int16_t y, uint16_t color, int16_t border_size, uint16_t border_color, const uint8_t* font_data, const glyph_param* font_info );
 
   void TextRect( const String& str, int16_t& rect_left, int16_t& rect_top, int16_t& rect_right, int16_t& rect_bot, const uint8_t* font_data, const glyph_param* font_info );
+
+  //Touch
+  void TouchRead( int16_t& x, int16_t& y, int16_t& z );
+  void TouchSetColibration( int16_t x_min, int16_t x_max, int16_t y_min, int16_t y_max );
+  void TouchMap( int16_t& x, int16_t& y );
 };
