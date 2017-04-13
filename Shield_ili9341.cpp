@@ -1739,6 +1739,7 @@ void Shield_ili9341::DrawTextScaleBorder( const String& str, int scale, int16_t 
 
 void Shield_ili9341::TouchRead( int16_t& x, int16_t& y, int16_t& z )
 {
+#ifdef TOUCH_ENABLED
     pinMode(TOUCH_YP, INPUT);
     pinMode(TOUCH_YM, INPUT);
     digitalWrite(TOUCH_YP, LOW);
@@ -1789,6 +1790,7 @@ void Shield_ili9341::TouchRead( int16_t& x, int16_t& y, int16_t& z )
     pinMode(TOUCH_XM, OUTPUT);
 #endif
 
+#endif
 }
 
 void Shield_ili9341::TouchSetColibration( int16_t x_min, int16_t x_max, int16_t y_min, int16_t y_max )

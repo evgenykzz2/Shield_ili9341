@@ -31,6 +31,8 @@ static const int LCDpin[TFT_PIN_COUNT] = {8, 9, 2, 3, 4, 5, 6, 7};
 #define TOUCH_XP 6
 #define TOUCH_CONFICT
 
+#define TOUCH_ENABLED
+
 #else
 
 //Hacked UNO/nano shield
