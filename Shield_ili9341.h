@@ -1,7 +1,10 @@
 #pragma once
 #include <stdint.h>
 #include "Arduino.h"
+
+#if !defined(ARDUINO_ARCH_ESP32)
 #include <avr/pgmspace.h>
+#endif
 
 struct glyph_param
 {

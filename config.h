@@ -154,4 +154,24 @@ static const int LCDpin[TFT_PIN_COUNT] = {D3, D10, D4, D9, D2, D1, D6, D7};
 
 #define TFT_DATAPIN_SET(v) GPO = (GPO&0xFFFFCFC0) | ( v&0x3F) | ((v&0xC0) << 6);
 
+#elif defined(ARDUINO_ARCH_ESP32)
+
+#define TFT_PIN_COUNT 8
+static const int LCDpin[TFT_PIN_COUNT] = {12, 13, 14, 15, 16, 17, 18, 19};
+
+#define RESET 21
+#define CS 22
+#define RS 23
+#define WR 4
+#define RD 5
+
+#define TFT_SWAP            GPIO.out_w1tc |= ((uint32_t)1 << WR); GPIO.out_w1ts = ((uint32_t)1 << WR);
+#define TFT_SWAP_RD         GPIO.out_w1tc |= ((uint32_t)1 << RD); GPIO.out_w1ts |= ((uint32_t)1 << RD);
+#define TFT_CMD_MODE        GPIO.out_w1tc |= ((uint32_t)1 << RS);
+#define TFT_DATA_MODE       GPIO.out_w1ts |= ((uint32_t)1 << RS);
+#define TFT_SWAP_DATA_WR    TFT_DATA_MODE TFT_SWAP
+#define TFT_SWAP_CMD_WR     TFT_CMD_MODE TFT_SWAP
+
+#define TFT_DATAPIN_SET(v) GPIO.out_w1tc |= ((uint32_t)((~v) & 0xFF) << 12); GPIO.out_w1ts |= (((uint32_t)v) << 12);
+
 #endif

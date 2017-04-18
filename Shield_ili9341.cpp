@@ -435,7 +435,7 @@ void Shield_ili9341::DrawLine_safe( int16_t x0, int16_t y0, int16_t x1, int16_t 
             t=x0; x0=x1; x1=t;
             t=y0; y0=y1; y1=t;
         }
-        int32_t ys = (1024*int32_t(y1-y0))/int32_t(x1-x0);
+        int32_t ys = (x0==x1) ? 1 : (1024*int32_t(y1-y0))/int32_t(x1-x0);
         int32_t yt = int32_t(y0)*1024;
         int16_t x = x0;
         while ( x < 0 )
@@ -469,7 +469,7 @@ void Shield_ili9341::DrawLine_safe( int16_t x0, int16_t y0, int16_t x1, int16_t 
             t=x0; x0=x1; x1=t;
             t=y0; y0=y1; y1=t;
         }
-        int32_t xs = (1024*int32_t(x1-x0))/int32_t(y1-y0);
+        int32_t xs = (y0==y1) ? 1 : (1024*int32_t(x1-x0))/int32_t(y1-y0);
         int32_t xt = int32_t(x0)*1024;
 
         int16_t y = y0;
@@ -511,7 +511,7 @@ void Shield_ili9341::DrawLine_unsafe_fast( int16_t x0, int16_t y0, int16_t x1, i
             t=x0; x0=x1; x1=t;
             t=y0; y0=y1; y1=t;
         }
-        int32_t xs = (1024*int32_t(x1-x0))/int32_t(y1-y0);
+        int32_t xs = (y0==y1) ? 1 : (1024*int32_t(x1-x0))/int32_t(y1-y0);
         int32_t xt = int32_t(x0)*1024;
         if ( x1 > x0 )
         {
@@ -560,7 +560,7 @@ void Shield_ili9341::DrawLine_unsafe_fast( int16_t x0, int16_t y0, int16_t x1, i
             t=x0; x0=x1; x1=t;
             t=y0; y0=y1; y1=t;
         }
-        int32_t ys = (1024*int32_t(y1-y0))/int32_t(x1-x0);
+        int32_t ys = (x0==x1) ? 1 : (1024*int32_t(y1-y0))/int32_t(x1-x0);
         int32_t yt = int32_t(y0)*1024;
         if ( y1 > y0 )
         {
@@ -624,7 +624,7 @@ void Shield_ili9341::DrawLine_unsafe( int16_t x0, int16_t y0, int16_t x1, int16_
             t=x0; x0=x1; x1=t;
             t=y0; y0=y1; y1=t;
         }
-        int32_t xs = (1024*int32_t(x1-x0))/int32_t(y1-y0);
+        int32_t xs = (y0==y1) ? 1 : (1024*int32_t(x1-x0))/int32_t(y1-y0);
         int32_t xt = int32_t(x0)*1024;
         if ( x1 > x0 )
         {
@@ -675,7 +675,7 @@ void Shield_ili9341::DrawLine_unsafe( int16_t x0, int16_t y0, int16_t x1, int16_
             t=x0; x0=x1; x1=t;
             t=y0; y0=y1; y1=t;
         }
-        int32_t ys = (1024*int32_t(y1-y0))/int32_t(x1-x0);
+        int32_t ys = (x0==x1) ? 1 : (1024*int32_t(y1-y0))/int32_t(x1-x0);
         int32_t yt = int32_t(y0)*1024;
         if ( y1 > y0 )
         {
