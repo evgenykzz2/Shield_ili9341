@@ -25,6 +25,9 @@ static const int LCDpin[TFT_PIN_COUNT] = {8, 9, 2, 3, 4, 5, 6, 7};
 #define TFT_DATAPIN_SET_LO(v)  PORTB=v&3;
 #define TFT_DATAPIN_SET_HI(v)  PORTD=v&0xFC;
 
+#define TFT_SWAP_FAST_PREPARE
+#define TFT_SWAP_FAST           TFT_SWAP_DATA_WR
+
 #define TOUCH_YP A1
 #define TOUCH_XM A2
 #define TOUCH_YM 7
@@ -57,6 +60,9 @@ static const int LCDpin[TFT_PIN_COUNT] = {0, 1, 2, 3, 4, 5, 6, 7};
 #define TFT_DATA_MODE       PORTB |= 4;
 #define TFT_DATAPIN_SET(v)  PORTD=v;
 
+#define TFT_SWAP_FAST_PREPARE
+#define TFT_SWAP_FAST           TFT_SWAP_DATA_WR
+
 #endif
 
 #elif defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) // Mega 1280 & 2560
@@ -81,6 +87,9 @@ static const int LCDpin[TFT_PIN_COUNT] = {37, 36, 35, 34, 33, 32, 31, 30,   22, 
 #define TFT_DATA_MODE       PORTD |= 128;
 #define TFT_DATAPIN_SET(v)  PORTA=v;
 
+#define TFT_SWAP_FAST_PREPARE
+#define TFT_SWAP_FAST           TFT_SWAP_DATA_WR
+
 // RD  WR RS  CS RST
 // L7  G2 D7  G1 G0
 // 128 4  128 2  1
@@ -103,6 +112,9 @@ static const int LCDpin[TFT_PIN_COUNT] = {22, 23, 24, 25, 26, 27, 28, 29};
 #define TFT_CMD_MODE        PORTC &= ~4;
 #define TFT_DATA_MODE       PORTC |= 4;
 #define TFT_DATAPIN_SET(v)  PORTA=v;
+
+#define TFT_SWAP_FAST_PREPARE
+#define TFT_SWAP_FAST           TFT_SWAP_DATA_WR
 
 // RD WR RS CS RST
 // 1  0  1  0  1
@@ -131,6 +143,9 @@ static const int LCDpin[TFT_PIN_COUNT] = {25, 26, 27, 28, 14, 15, 29, 11};
 #define TFT_DATA_MODE       REG_PIOC_ODSR |= 8;
 #define TFT_DATAPIN_SET(v)  REG_PIOD_ODSR = v;
 
+#define TFT_SWAP_FAST_PREPARE
+#define TFT_SWAP_FAST           TFT_SWAP_DATA_WR
+
 #elif defined(ESP8266)
 
 #define TFT_PIN_COUNT 8
@@ -154,6 +169,9 @@ static const int LCDpin[TFT_PIN_COUNT] = {D3, D10, D4, D9, D2, D1, D6, D7};
 
 #define TFT_DATAPIN_SET(v) GPO = (GPO&0xFFFFCFC0) | ( v&0x3F) | ((v&0xC0) << 6);
 
+#define TFT_SWAP_FAST_PREPARE
+#define TFT_SWAP_FAST           TFT_SWAP_DATA_WR
+
 #elif defined(ARDUINO_ARCH_ESP32)
 
 #define TFT_PIN_COUNT 8
@@ -166,12 +184,15 @@ static const int LCDpin[TFT_PIN_COUNT] = {12, 13, 14, 15, 16, 17, 18, 19};
 #define RD 5
 
 #define TFT_SWAP            GPIO.out_w1tc |= ((uint32_t)1 << WR); GPIO.out_w1ts = ((uint32_t)1 << WR);
-#define TFT_SWAP_RD         GPIO.out_w1tc |= ((uint32_t)1 << RD); GPIO.out_w1ts |= ((uint32_t)1 << RD);
+#define TFT_SWAP_RD         GPIO.out_w1tc |= ((uint32_t)1 << RD); GPIO.out_w1ts = ((uint32_t)1 << RD);
 #define TFT_CMD_MODE        GPIO.out_w1tc |= ((uint32_t)1 << RS);
 #define TFT_DATA_MODE       GPIO.out_w1ts |= ((uint32_t)1 << RS);
 #define TFT_SWAP_DATA_WR    TFT_DATA_MODE TFT_SWAP
 #define TFT_SWAP_CMD_WR     TFT_CMD_MODE TFT_SWAP
 
-#define TFT_DATAPIN_SET(v) GPIO.out_w1tc |= ((uint32_t)((~v) & 0xFF) << 12); GPIO.out_w1ts |= (((uint32_t)v) << 12);
+#define TFT_DATAPIN_SET(v) GPIO.out_w1tc = ((uint32_t)((~v) & 0xFF) << 12); GPIO.out_w1ts = (((uint32_t)v) << 12);
+
+#define TFT_SWAP_FAST_PREPARE   TFT_DATA_MODE
+#define TFT_SWAP_FAST           GPIO.out_w1tc  = ((uint32_t)1 << WR); GPIO.out_w1ts = ((uint32_t)1 << WR);
 
 #endif

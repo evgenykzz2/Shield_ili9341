@@ -160,50 +160,54 @@ void Shield_ili9341::SendData( uint8_t data )
 void Shield_ili9341::SetWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 {
   SendCmd(0x2A);
+  TFT_SWAP_FAST_PREPARE
   TFT_DATAPIN_SET(x0>>8);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
   TFT_DATAPIN_SET(x0&0xFF);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
   TFT_DATAPIN_SET(x1>>8);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
   TFT_DATAPIN_SET(x1&0xFF);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
 
   SendCmd(0x2B);
+  TFT_SWAP_FAST_PREPARE
   TFT_DATAPIN_SET(y0>>8);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
   TFT_DATAPIN_SET(y0&0xFF);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
   TFT_DATAPIN_SET(y1>>8);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
   TFT_DATAPIN_SET(y1&0xFF);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
 }
 
 void Shield_ili9341::SetColumn( uint16_t x0, uint16_t x1 )
 {
   SendCmd(0x2A);
+  TFT_SWAP_FAST_PREPARE
   TFT_DATAPIN_SET(x0>>8);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
   TFT_DATAPIN_SET(x0&0xFF);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
   TFT_DATAPIN_SET(x1>>8);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
   TFT_DATAPIN_SET(x1&0xFF);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
 }
 
 void Shield_ili9341::SetPage( uint16_t y0, uint16_t y1 )
 {
   SendCmd(0x2B);
+  TFT_SWAP_FAST_PREPARE
   TFT_DATAPIN_SET(y0>>8);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
   TFT_DATAPIN_SET(y0&0xFF);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
   TFT_DATAPIN_SET(y1>>8);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
   TFT_DATAPIN_SET(y1&0xFF);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
 }
 
 uint16_t Shield_ili9341::RGB16( uint8_t r, uint8_t g, uint8_t b )
@@ -216,44 +220,14 @@ void Shield_ili9341::FillFast( uint8_t color8 )
   SetWindow(0, 0, m_width-1, m_height-1);
   SendCmd(0x2c);
   TFT_DATAPIN_SET(color8);
+  TFT_SWAP_FAST_PREPARE
   uint16_t sq = ( int32_t(m_width)*int32_t(m_height)/16 );
   for ( uint16_t i = 0; i < sq; ++i )
   {
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
-      TFT_SWAP_DATA_WR
+      TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST
+      TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST
+      TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST
+      TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST
   }
 }
 
@@ -268,44 +242,29 @@ void Shield_ili9341::Fill( uint16_t color )
   }
   SetWindow(0, 0, m_width-1, m_height-1);
   SendCmd(0x2c);
+  TFT_SWAP_FAST_PREPARE
   uint16_t sq = ( int32_t(m_width)*int32_t(m_height)/8 );
   for ( uint16_t i = 0; i < sq; ++i )
   {
-      TFT_DATAPIN_SET(hi);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(lo);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(hi);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(lo);
-      TFT_SWAP_DATA_WR
+      TFT_DATAPIN_SET(hi);      TFT_SWAP_FAST
+      TFT_DATAPIN_SET(lo);      TFT_SWAP_FAST
+      TFT_DATAPIN_SET(hi);      TFT_SWAP_FAST
+      TFT_DATAPIN_SET(lo);      TFT_SWAP_FAST
 
-      TFT_DATAPIN_SET(hi);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(lo);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(hi);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(lo);
-      TFT_SWAP_DATA_WR
+      TFT_DATAPIN_SET(hi);      TFT_SWAP_FAST
+      TFT_DATAPIN_SET(lo);      TFT_SWAP_FAST
+      TFT_DATAPIN_SET(hi);      TFT_SWAP_FAST
+      TFT_DATAPIN_SET(lo);      TFT_SWAP_FAST
 
-      TFT_DATAPIN_SET(hi);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(lo);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(hi);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(lo);
-      TFT_SWAP_DATA_WR
+      TFT_DATAPIN_SET(hi);      TFT_SWAP_FAST
+      TFT_DATAPIN_SET(lo);      TFT_SWAP_FAST
+      TFT_DATAPIN_SET(hi);      TFT_SWAP_FAST
+      TFT_DATAPIN_SET(lo);      TFT_SWAP_FAST
 
-      TFT_DATAPIN_SET(hi);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(lo);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(hi);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(lo);
-      TFT_SWAP_DATA_WR
+      TFT_DATAPIN_SET(hi);      TFT_SWAP_FAST
+      TFT_DATAPIN_SET(lo);      TFT_SWAP_FAST
+      TFT_DATAPIN_SET(hi);      TFT_SWAP_FAST
+      TFT_DATAPIN_SET(lo);      TFT_SWAP_FAST
   }
 }
 
@@ -337,19 +296,9 @@ void Shield_ili9341::DrawRect( int16_t x0, int16_t y0, int16_t x1, int16_t y1, u
   if (x1>=m_width)  x1=m_width-1;
   if (y1>=m_height) y1=m_height-1;
   SetWindow(x0, y0, x1, y1);
-  uint8_t hi = color >> 8;
-  uint8_t lo = color & 0xFF;
   SendCmd(0x2c);
-  for ( uint16_t w = y0; w <= y1; ++w )
-  {
-    for ( uint16_t h = x0; h <= x1; ++h )
-    {
-      TFT_DATAPIN_SET(hi);
-      TFT_SWAP_DATA_WR
-      TFT_DATAPIN_SET(lo);
-      TFT_SWAP_DATA_WR
-    }
-  }
+  uint16_t sq = ( int32_t(y1-y0+1)*int32_t(x1-x0+1) );
+  StreamPixels( color, sq );
 }
 
 void Shield_ili9341::DrawPixelFast( int16_t x, int16_t y, uint8_t color8 )
@@ -359,9 +308,10 @@ void Shield_ili9341::DrawPixelFast( int16_t x, int16_t y, uint8_t color8 )
   SetWindow(x, y, x, y);
   TFT_DATAPIN_SET(0x2C);
   TFT_SWAP_CMD_WR
+  TFT_SWAP_FAST_PREPARE
   TFT_DATAPIN_SET(color8);
-  TFT_SWAP_DATA_WR
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
+  TFT_SWAP_FAST
 }
 
 void Shield_ili9341::DrawPixel( int16_t x, int16_t y, uint16_t color )
@@ -371,10 +321,11 @@ void Shield_ili9341::DrawPixel( int16_t x, int16_t y, uint16_t color )
   SetWindow(x, y, x, y);
   TFT_DATAPIN_SET(0x2C);
   TFT_SWAP_CMD_WR
+  TFT_SWAP_FAST_PREPARE
   TFT_DATAPIN_SET(color >> 8);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
   TFT_DATAPIN_SET(color & 0xFF);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
 }
 
 void Shield_ili9341::DrawPixel_unsafe( int16_t x, int16_t y, uint16_t color )
@@ -382,10 +333,11 @@ void Shield_ili9341::DrawPixel_unsafe( int16_t x, int16_t y, uint16_t color )
   SetWindow(x, y, x, y);
   TFT_DATAPIN_SET(0x2C);
   TFT_SWAP_CMD_WR
+  TFT_SWAP_FAST_PREPARE
   TFT_DATAPIN_SET(color >> 8);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
   TFT_DATAPIN_SET(color & 0xFF);
-  TFT_SWAP_DATA_WR
+  TFT_SWAP_FAST
 }
 
 void Shield_ili9341::DrawHLine_safe( int16_t x0, int16_t y0, int16_t x1, uint16_t color )
@@ -453,10 +405,11 @@ void Shield_ili9341::DrawLine_safe( int16_t x0, int16_t y0, int16_t x1, int16_t 
                 SetWindow(x, y, x, y);
                 TFT_DATAPIN_SET(0x2C);
                 TFT_SWAP_CMD_WR
+                TFT_SWAP_FAST_PREPARE
                 TFT_DATAPIN_SET(color >> 8);
-                TFT_SWAP_DATA_WR
+                TFT_SWAP_FAST
                 TFT_DATAPIN_SET(color & 0xFF);
-                TFT_SWAP_DATA_WR
+                TFT_SWAP_FAST
             }
             yt += ys;
             x++;
@@ -488,10 +441,11 @@ void Shield_ili9341::DrawLine_safe( int16_t x0, int16_t y0, int16_t x1, int16_t 
                 SetWindow(x, y, x, y);
                 TFT_DATAPIN_SET(0x2C);
                 TFT_SWAP_CMD_WR
+                TFT_SWAP_FAST_PREPARE
                 TFT_DATAPIN_SET(color >> 8);
-                TFT_SWAP_DATA_WR
+                TFT_SWAP_FAST
                 TFT_DATAPIN_SET(color & 0xFF);
-                TFT_SWAP_DATA_WR
+                TFT_SWAP_FAST
             }
             y++;
             xt += xs;
@@ -523,11 +477,12 @@ void Shield_ili9341::DrawLine_unsafe_fast( int16_t x0, int16_t y0, int16_t x1, i
 
                 TFT_DATAPIN_SET(0x2C);
                 TFT_SWAP_CMD_WR
+                TFT_SWAP_FAST_PREPARE
                 TFT_DATAPIN_SET(color8);
                 for ( int16_t xx = x0; xx < x; ++xx )
                 {
-                    TFT_SWAP_DATA_WR
-                    TFT_SWAP_DATA_WR
+                    TFT_SWAP_FAST
+                    TFT_SWAP_FAST
                 }
                 x0 = x;            
                 xt += xs;
@@ -542,11 +497,12 @@ void Shield_ili9341::DrawLine_unsafe_fast( int16_t x0, int16_t y0, int16_t x1, i
 
                 TFT_DATAPIN_SET(0x2C);
                 TFT_SWAP_CMD_WR
+                TFT_SWAP_FAST_PREPARE
                 TFT_DATAPIN_SET(color8);
                 for ( int16_t xx = x; xx < x0; ++xx )
                 {
-                    TFT_SWAP_DATA_WR
-                    TFT_SWAP_DATA_WR
+                    TFT_SWAP_FAST
+                    TFT_SWAP_FAST
                 }
                 x0 = x;            
                 xt += xs;
@@ -572,11 +528,12 @@ void Shield_ili9341::DrawLine_unsafe_fast( int16_t x0, int16_t y0, int16_t x1, i
 
                 TFT_DATAPIN_SET(0x2C);
                 TFT_SWAP_CMD_WR
+                TFT_SWAP_FAST_PREPARE
                 TFT_DATAPIN_SET(color8);
                 for ( int16_t yy = y0; yy < y; ++yy )
                 {
-                    TFT_SWAP_DATA_WR
-                    TFT_SWAP_DATA_WR
+                    TFT_SWAP_FAST
+                    TFT_SWAP_FAST
                 }
                 y0 = y;
                 yt += ys;
@@ -591,11 +548,12 @@ void Shield_ili9341::DrawLine_unsafe_fast( int16_t x0, int16_t y0, int16_t x1, i
 
                 TFT_DATAPIN_SET(0x2C);
                 TFT_SWAP_CMD_WR
+                TFT_SWAP_FAST_PREPARE
                 TFT_DATAPIN_SET(color8);
                 for ( int16_t yy = y; yy < y0; ++yy )
                 {
-                    TFT_SWAP_DATA_WR
-                    TFT_SWAP_DATA_WR
+                    TFT_SWAP_FAST
+                    TFT_SWAP_FAST
                 }
                 y0 = y;
                 yt += ys;
@@ -636,12 +594,13 @@ void Shield_ili9341::DrawLine_unsafe( int16_t x0, int16_t y0, int16_t x1, int16_
 
                 TFT_DATAPIN_SET(0x2C);
                 TFT_SWAP_CMD_WR
+                TFT_SWAP_FAST_PREPARE
                 for ( int16_t xx = x0; xx < x; ++xx )
                 {
                     TFT_DATAPIN_SET(hi);
-                    TFT_SWAP_DATA_WR
+                    TFT_SWAP_FAST
                     TFT_DATAPIN_SET(lo);
-                    TFT_SWAP_DATA_WR
+                    TFT_SWAP_FAST
                 }
                 x0 = x;            
                 xt += xs;
@@ -656,12 +615,13 @@ void Shield_ili9341::DrawLine_unsafe( int16_t x0, int16_t y0, int16_t x1, int16_
 
                 TFT_DATAPIN_SET(0x2C);
                 TFT_SWAP_CMD_WR
+                TFT_SWAP_FAST_PREPARE
                 for ( int16_t xx = x; xx < x0; ++xx )
                 {
                     TFT_DATAPIN_SET(hi);
-                    TFT_SWAP_DATA_WR
+                    TFT_SWAP_FAST
                     TFT_DATAPIN_SET(lo);
-                    TFT_SWAP_DATA_WR
+                    TFT_SWAP_FAST
                 }
                 x0 = x;            
                 xt += xs;
@@ -687,12 +647,13 @@ void Shield_ili9341::DrawLine_unsafe( int16_t x0, int16_t y0, int16_t x1, int16_
 
                 TFT_DATAPIN_SET(0x2C);
                 TFT_SWAP_CMD_WR
+                TFT_SWAP_FAST_PREPARE
                 for ( int16_t yy = y0; yy < y; ++yy )
                 {
                     TFT_DATAPIN_SET(hi);
-                    TFT_SWAP_DATA_WR
+                    TFT_SWAP_FAST
                     TFT_DATAPIN_SET(lo);
-                    TFT_SWAP_DATA_WR
+                    TFT_SWAP_FAST
                 }
                 y0 = y;
                 yt += ys;
@@ -707,12 +668,13 @@ void Shield_ili9341::DrawLine_unsafe( int16_t x0, int16_t y0, int16_t x1, int16_
 
                 TFT_DATAPIN_SET(0x2C);
                 TFT_SWAP_CMD_WR
+                TFT_SWAP_FAST_PREPARE
                 for ( int16_t yy = y; yy < y0; ++yy )
                 {
                     TFT_DATAPIN_SET(hi);
-                    TFT_SWAP_DATA_WR
+                    TFT_SWAP_FAST
                     TFT_DATAPIN_SET(lo);
-                    TFT_SWAP_DATA_WR
+                    TFT_SWAP_FAST
                 }
                 y0 = y;
                 yt += ys;
@@ -822,37 +784,41 @@ void Shield_ili9341::DrawCircle_unsafe( int16_t x_center, int16_t y_center, int1
         {
             TFT_DATAPIN_SET(0x2C);
             TFT_SWAP_CMD_WR
+            TFT_SWAP_FAST_PREPARE
             TFT_DATAPIN_SET(hi);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
             TFT_DATAPIN_SET(lo);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
         }
         SetColumn(xd2, xd2);
         {
             TFT_DATAPIN_SET(0x2C);
             TFT_SWAP_CMD_WR
+            TFT_SWAP_FAST_PREPARE
             TFT_DATAPIN_SET(hi);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
             TFT_DATAPIN_SET(lo);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
         }
         SetPage(yd2, yd2);
         {
             TFT_DATAPIN_SET(0x2C);
             TFT_SWAP_CMD_WR
+            TFT_SWAP_FAST_PREPARE
             TFT_DATAPIN_SET(hi);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
             TFT_DATAPIN_SET(lo);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
         }
         SetColumn(xd0, xd0);
         {
             TFT_DATAPIN_SET(0x2C);
             TFT_SWAP_CMD_WR
+            TFT_SWAP_FAST_PREPARE
             TFT_DATAPIN_SET(hi);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
             TFT_DATAPIN_SET(lo);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
         }
 
 
@@ -861,37 +827,41 @@ void Shield_ili9341::DrawCircle_unsafe( int16_t x_center, int16_t y_center, int1
         {
             TFT_DATAPIN_SET(0x2C);
             TFT_SWAP_CMD_WR
+            TFT_SWAP_FAST_PREPARE
             TFT_DATAPIN_SET(hi);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
             TFT_DATAPIN_SET(lo);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
         }
         SetColumn(xd3, xd3);
         {
             TFT_DATAPIN_SET(0x2C);
             TFT_SWAP_CMD_WR
+            TFT_SWAP_FAST_PREPARE
             TFT_DATAPIN_SET(hi);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
             TFT_DATAPIN_SET(lo);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
         }
         SetPage(yd3, yd3);
         {
             TFT_DATAPIN_SET(0x2C);
             TFT_SWAP_CMD_WR
+            TFT_SWAP_FAST_PREPARE
             TFT_DATAPIN_SET(hi);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
             TFT_DATAPIN_SET(lo);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
         }
         SetColumn(xd1, xd1);
         {
             TFT_DATAPIN_SET(0x2C);
             TFT_SWAP_CMD_WR
+            TFT_SWAP_FAST_PREPARE
             TFT_DATAPIN_SET(hi);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
             TFT_DATAPIN_SET(lo);
-            TFT_SWAP_DATA_WR
+            TFT_SWAP_FAST
         }
 
         y++;        
@@ -922,8 +892,8 @@ void Shield_ili9341::DrawCircleFill_safe( int16_t x_center, int16_t y_center, in
     int16_t y = 0;
     int16_t radiusError = 1-x;
 
-    uint8_t hi = color >> 8;
-    uint8_t lo = color & 0xFF;
+    //uint8_t hi = color >> 8;
+    //uint8_t lo = color & 0xFF;
 
     while(x >= y)
     {
@@ -971,8 +941,8 @@ void Shield_ili9341::DrawCircleFill_unsafe( int16_t x_center, int16_t y_center, 
     int16_t y = 0;
     int16_t radiusError = 1-x;
 
-    uint8_t hi = color >> 8;
-    uint8_t lo = color & 0xFF;
+    //uint8_t hi = color >> 8;
+    //uint8_t lo = color & 0xFF;
 
     while(x >= y)
     {
@@ -1041,37 +1011,42 @@ void Shield_ili9341::StreamStart()
 
 void Shield_ili9341::StreamPixel16( uint8_t lo, uint8_t hi )
 {
+    TFT_SWAP_FAST_PREPARE
     TFT_DATAPIN_SET(hi);
-    TFT_SWAP_DATA_WR
+    TFT_SWAP_FAST
     TFT_DATAPIN_SET(lo);
-    TFT_SWAP_DATA_WR
+    TFT_SWAP_FAST
 }
 
 void Shield_ili9341::StreamPixel( uint16_t color )
 {
+    TFT_SWAP_FAST_PREPARE
     TFT_DATAPIN_SET(color >> 8);
-    TFT_SWAP_DATA_WR
+    TFT_SWAP_FAST
     TFT_DATAPIN_SET(color & 0xFF);
-    TFT_SWAP_DATA_WR
+    TFT_SWAP_FAST
+
 }
 
 void Shield_ili9341::StreamPixel8( uint8_t color8 )
 {
+    TFT_SWAP_FAST_PREPARE
     TFT_DATAPIN_SET(color8);
-    TFT_SWAP_DATA_WR
-    TFT_SWAP_DATA_WR
+    TFT_SWAP_FAST
+    TFT_SWAP_FAST
 }
 
 void Shield_ili9341::StreamPixels( uint16_t color, uint16_t count )
 {
+    TFT_SWAP_FAST_PREPARE
     uint8_t hi = color >> 8;
     uint8_t lo = color & 0xFF;
     for ( uint16_t i = 0; i < count; ++i )
     {
         TFT_DATAPIN_SET(hi);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
         TFT_DATAPIN_SET(lo);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
     }
 }
 
@@ -1135,27 +1110,28 @@ void Shield_ili9341::StreamPixels_16( uint16_t color )
 #endif
     {
     //Full
+    TFT_SWAP_FAST_PREPARE
     for ( uint8_t i = 0; i < 4; ++i )
     {
         TFT_DATAPIN_SET(hi);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
         TFT_DATAPIN_SET(lo);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
 
         TFT_DATAPIN_SET(hi);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
         TFT_DATAPIN_SET(lo);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
 
         TFT_DATAPIN_SET(hi);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
         TFT_DATAPIN_SET(lo);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
 
         TFT_DATAPIN_SET(hi);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
         TFT_DATAPIN_SET(lo);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
     }
 
     }
@@ -1221,27 +1197,28 @@ void Shield_ili9341::StreamPixels_64( uint16_t color )
 #endif
     {
     //Full
+    TFT_SWAP_FAST_PREPARE
     for ( uint8_t i = 0; i < 16; ++i )
     {
         TFT_DATAPIN_SET(hi);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
         TFT_DATAPIN_SET(lo);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
 
         TFT_DATAPIN_SET(hi);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
         TFT_DATAPIN_SET(lo);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
 
         TFT_DATAPIN_SET(hi);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
         TFT_DATAPIN_SET(lo);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
 
         TFT_DATAPIN_SET(hi);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
         TFT_DATAPIN_SET(lo);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
     }
 
     }
@@ -1307,27 +1284,28 @@ void Shield_ili9341::StreamPixels_256( uint16_t color )
 #endif
     {
     //Full
+    TFT_SWAP_FAST_PREPARE
     for ( uint8_t i = 0; i < 64; ++i )
     {
         TFT_DATAPIN_SET(hi);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
         TFT_DATAPIN_SET(lo);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
 
         TFT_DATAPIN_SET(hi);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
         TFT_DATAPIN_SET(lo);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
 
         TFT_DATAPIN_SET(hi);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
         TFT_DATAPIN_SET(lo);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
 
         TFT_DATAPIN_SET(hi);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
         TFT_DATAPIN_SET(lo);
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
     }
 
     }
@@ -1335,118 +1313,96 @@ void Shield_ili9341::StreamPixels_256( uint16_t color )
 
 void Shield_ili9341::StreamPixels8( uint8_t color8, uint16_t count )
 {
+    TFT_SWAP_FAST_PREPARE
     TFT_DATAPIN_SET(color8);
     uint16_t i = 0;
     while ( i+3 < count )
     {
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST
         i += 4;
     }
     while ( i < count )
     {
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
         i ++;
     }
 }
 
 void Shield_ili9341::StreamPixels8_16( uint8_t color8 )
 {
+    TFT_SWAP_FAST_PREPARE
     TFT_DATAPIN_SET(color8);
     for ( uint8_t i = 0; i < 2; ++i )
     {
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
-
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
-
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
-
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
-
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
-
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
-
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
-
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST
+        TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST
+        TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST
+        TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST TFT_SWAP_FAST
     }
 }
 
 void Shield_ili9341::StreamPixels8_64( uint8_t color8 )
 {
+    TFT_SWAP_FAST_PREPARE
     TFT_DATAPIN_SET(color8);
     for ( uint8_t i = 0; i < 8; ++i )
     {
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
 
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
 
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
 
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
 
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
 
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
 
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
 
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
     }
 }
 
 void Shield_ili9341::StreamPixels8_256( uint8_t color8 )
 {
+    TFT_SWAP_FAST_PREPARE
     TFT_DATAPIN_SET(color8);
     for ( uint8_t i = 0; i < 32; ++i )
     {
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
 
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
 
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
 
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
 
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
 
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
 
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
 
-        TFT_SWAP_DATA_WR
-        TFT_SWAP_DATA_WR
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
     }
 }
 
@@ -1532,10 +1488,11 @@ void Shield_ili9341::DrawText( const String& str, int16_t x, int16_t y, uint16_t
                         SetColumn( xline, xline );
                         TFT_DATAPIN_SET(0x2C);
                         TFT_SWAP_CMD_WR
+                        TFT_SWAP_FAST_PREPARE
                         TFT_DATAPIN_SET(hi);
-                        TFT_SWAP_DATA_WR
+                        TFT_SWAP_FAST
                         TFT_DATAPIN_SET(lo);
-                        TFT_SWAP_DATA_WR
+                        TFT_SWAP_FAST
                     }
                     m = m >> 1;
                     if ( m == 0 )
@@ -1567,10 +1524,11 @@ void Shield_ili9341::DrawText( const String& str, int16_t x, int16_t y, uint16_t
                             SetColumn( xline, xline );
                             TFT_DATAPIN_SET(0x2C);
                             TFT_SWAP_CMD_WR
+                            TFT_SWAP_FAST_PREPARE
                             TFT_DATAPIN_SET(hi);
-                            TFT_SWAP_DATA_WR
+                            TFT_SWAP_FAST
                             TFT_DATAPIN_SET(lo);
-                            TFT_SWAP_DATA_WR
+                            TFT_SWAP_FAST
                         }
                     }
                     m = m >> 1;
