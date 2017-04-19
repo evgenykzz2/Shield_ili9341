@@ -195,4 +195,31 @@ static const int LCDpin[TFT_PIN_COUNT] = {12, 13, 14, 15, 16, 17, 18, 19};
 #define TFT_SWAP_FAST_PREPARE   TFT_DATA_MODE
 #define TFT_SWAP_FAST           GPIO.out_w1tc  = ((uint32_t)1 << WR); GPIO.out_w1ts = ((uint32_t)1 << WR);
 
+#elif defined(__STM32F1__)
+
+#define TFT_PIN_COUNT 8
+static const int LCDpin[TFT_PIN_COUNT] = {PB3, PB4, PB5, PB6, PB7, PB8, PB9, PB10};
+
+#define RESET 12
+#define CS PB11
+#define RS PB12
+#define WR PB13
+#define RD PB14
+
+//set hi
+GPIOC->regs->BSRR = 1U << 13;
+//set low
+GPIOC->regs->BSRR = 1U << (13+15);
+
+#define TFT_SWAP_DATA_WR    PORTB = 1+4+16; PORTB = 1+2+4+16;
+#define TFT_SWAP_CMD_WR     PORTB = 1+16; PORTB = 1+2+16;
+#define TFT_SWAP            PORTB &= ~2;PORTB |= 2;
+#define TFT_SWAP_RD         PORTB &= ~1;PORTB |= 1;
+#define TFT_CMD_MODE        PORTB &= ~4;
+#define TFT_DATA_MODE       PORTB |= 4;
+#define TFT_DATAPIN_SET(v)  PORTD=v;
+
+#define TFT_SWAP_FAST_PREPARE
+#define TFT_SWAP_FAST           TFT_SWAP_DATA_WR
+
 #endif
