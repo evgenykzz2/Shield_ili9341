@@ -1,17 +1,17 @@
 #include "Shield_ili9341.h"
 #include "font/arial_14.h"
 
-//#define USE_SERIAL
+#define USE_SERIAL
 
 Shield_ili9341 tft;
 
 void setup()
 {
   #ifdef USE_SERIAL
-  Serial.begin(9600);
+  Serial.begin(115200);
   #endif
-  //tft.Init( 320, 240, Shield_ili9341::MemoryAccessControl_Rotate | Shield_ili9341::MemoryAccessControl_FlipX );
-  tft.Init( 480, 320, Shield_ili9341::MemoryAccessControl_Rotate );
+  tft.Init( 320, 240, Shield_ili9341::MemoryAccessControl_Rotate );
+  //tft.Init( 480, 320, Shield_ili9341::MemoryAccessControl_Rotate );
 }
 
 void Transform( float x, float y, float z, const float* mt, float& xt, float& yt, float& zt )
@@ -23,18 +23,21 @@ void Transform( float x, float y, float z, const float* mt, float& xt, float& yt
 
 void loop()
 {
+  unsigned long time_text = 0;
   {
     unsigned long time0 = micros();
     tft.FillFast( Shield_ili9341::Color8_Black );
     for ( int i = 0; i < 10000; ++i )
       tft.DrawText( "Test", rand()%tft.Width(), rand()%tft.Height(), rand(), g_font_data, g_font_info );
     unsigned long time1 = micros();
+    time_text = time1-time0;
     #ifdef USE_SERIAL
     Serial.print("Text: ");
-    Serial.println( time1-time0 );
+    Serial.println( time_text );
     #endif
   }
 
+  unsigned long time_move_text = 0;
   {
     unsigned long time0 = micros();
     tft.FillFast( Shield_ili9341::Color8_Black );
@@ -48,43 +51,48 @@ void loop()
     }
 
     unsigned long time1 = micros();
+    time_move_text = time1-time0;
     #ifdef USE_SERIAL
     Serial.print("Move Text: ");
-    Serial.println( time1-time0 );
+    Serial.println( time_move_text );
     #endif
   }
 
   //Fast fill 8bit color
+  int fill_frame_count = 64;
+  unsigned long time_fill8 = 0;
   {
     unsigned long time0 = micros();
-    int frame_count = 64;
-    for ( int i = 0; i < frame_count; ++i )
+    for ( int i = 0; i < fill_frame_count; ++i )
       tft.FillFast( rand() % 256 );
     unsigned long time1 = micros();
+    time_fill8 = time1-time0;
     #ifdef USE_SERIAL
     Serial.print("Fast fill: frame: ");
-    Serial.print( (time1-time0)/frame_count );
+    Serial.print( time_fill8/fill_frame_count );
     Serial.print(" fps: ");
-    Serial.println( 1000000.0f*float(frame_count)/float(time1-time0) );
+    Serial.println( 1000000.0f*float(fill_frame_count)/float(time_fill8) );
     #endif
   }
 
   //Fill 16bit color
+  unsigned long time_fill16 = 0;
   {
     unsigned long time0 = micros();
-    int frame_count = 64;
-    for ( int i = 0; i < frame_count; ++i )
+    for ( int i = 0; i < fill_frame_count; ++i )
       tft.Fill( rand() );
     unsigned long time1 = micros();
+    time_fill16 = time1-time0;
     #ifdef USE_SERIAL
     Serial.print("Full fill: frame: ");
-    Serial.print( (time1-time0)/frame_count );
+    Serial.print( (time_fill16)/fill_frame_count );
     Serial.print(" fps: ");
-    Serial.println( 1000000.0f*float(frame_count)/float(time1-time0) );
+    Serial.println( 1000000.0f*float(fill_frame_count)/float(time_fill16) );
     #endif
   }
 
   //Lines
+  unsigned long time_lines = 0;
   {
     tft.FillFast( Shield_ili9341::Color8_Black );
     unsigned long time0 = micros();
@@ -96,24 +104,28 @@ void loop()
       }
     }
     unsigned long time1 = micros();
+    time_lines = time1-time0;
     #ifdef USE_SERIAL
     Serial.print("Lines: ");
-    Serial.println( time1-time0 );
+    Serial.println( time_lines );
     #endif
   }
 
+  unsigned long time_pixels = 0;
   {
     tft.FillFast( Shield_ili9341::Color8_Black );
     unsigned long time0 = micros();
     for ( int32_t i = 0; i < 40000; ++i )
       tft.DrawPixel_unsafe( rand()%tft.Width(), rand()%tft.Height(), rand() );
     unsigned long time1 = micros();
+    time_pixels = time1-time0;
     #ifdef USE_SERIAL
     Serial.print("Pixels: ");
-    Serial.println( time1-time0 );
+    Serial.println( time_pixels );
     #endif
   }
 
+  unsigned long time_rect = 0;
   {
     tft.FillFast( Shield_ili9341::Color8_Black );
     unsigned long time0 = micros();
@@ -121,12 +133,14 @@ void loop()
       //tft.DrawRect( rand()%tft.Width(), rand()%tft.Height(), rand()%tft.Width(), rand()%tft.Height(), rand() );
       tft.DrawRectFast( rand()%tft.Width(), rand()%tft.Height(), rand()%tft.Width(), rand()%tft.Height(), rand() );
     unsigned long time1 = micros();
+    time_rect = time1-time0;
     #ifdef USE_SERIAL
     Serial.print("DrawRect: ");
-    Serial.println( time1-time0 );
+    Serial.println( time_rect );
     #endif
   }
-  
+
+  unsigned long time_circle = 0;
   {
     tft.FillFast( Shield_ili9341::Color8_Black );
     unsigned long time0 = micros();
@@ -136,12 +150,14 @@ void loop()
       //delay(1000);
     }
     unsigned long time1 = micros();
+    time_circle = time1-time0;
     #ifdef USE_SERIAL
     Serial.print("DrawCircle: ");
-    Serial.println( time1-time0 );
+    Serial.println( time_circle );
     #endif
   }
 
+  unsigned long time_circle_fill = 0;
   {
     tft.FillFast( Shield_ili9341::Color8_Black );
     unsigned long time0 = micros();
@@ -151,12 +167,14 @@ void loop()
       //delay(1000);
     }
     unsigned long time1 = micros();
+    time_circle_fill = time1-time0;
     #ifdef USE_SERIAL
     Serial.print("DrawCircleFill: ");
-    Serial.println( time1-time0 );
+    Serial.println( time_circle_fill );
     #endif
   }
 
+  unsigned long time_3d = 0;
   {
     tft.FillFast( Shield_ili9341::Color8_Black );
     unsigned long time0 = micros();
@@ -259,14 +277,66 @@ void loop()
     }
 
     unsigned long time1 = micros();
+    time_3d = time1-time0;
     #ifdef USE_SERIAL
     Serial.print("Linear 3d cube: ");
-    Serial.print( time1-time0 );
+    Serial.print( time_3d );
     Serial.print(" Calc: ");
     Serial.print( time_calc );
     Serial.print(" Draw: ");
     Serial.println( time_draw );
     #endif
+  }
+
+  //Show result
+  {
+    String text;
+    tft.FillFast( Shield_ili9341::Color8_Black );
+
+    int pos = 0;
+    int step = 10;
+    
+    text = "Text: " + String(time_text);
+    tft.DrawText( text, 0, pos, Shield_ili9341::Color_White, g_font_data, g_font_info );
+    pos += step;
+    
+    text = "Move Text: " + String(time_move_text);
+    tft.DrawText( text, 0, pos, Shield_ili9341::Color_White, g_font_data, g_font_info );
+    pos += step;
+
+    text = "Fill8: " + String(time_fill8) + " fps:" + String(1000000.0f*float(fill_frame_count)/float(time_fill8));
+    tft.DrawText( text, 0, pos, Shield_ili9341::Color_White, g_font_data, g_font_info );
+    pos += step;
+
+    text = "Fill16: " + String(time_fill16) + " fps:" + String(1000000.0f*float(fill_frame_count)/float(time_fill16));
+    tft.DrawText( text, 0, pos, Shield_ili9341::Color_White, g_font_data, g_font_info );
+    pos += step;
+
+    text = "Lines: " + String(time_lines);
+    tft.DrawText( text, 0, pos, Shield_ili9341::Color_White, g_font_data, g_font_info );
+    pos += step;
+
+    text = "Pixels: " + String(time_pixels);
+    tft.DrawText( text, 0, pos, Shield_ili9341::Color_White, g_font_data, g_font_info );
+    pos += step;
+
+    text = "Rect: " + String(time_rect);
+    tft.DrawText( text, 0, pos, Shield_ili9341::Color_White, g_font_data, g_font_info );
+    pos += step;
+
+    text = "Circle: " + String(time_circle);
+    tft.DrawText( text, 0, pos, Shield_ili9341::Color_White, g_font_data, g_font_info );
+    pos += step;
+
+    text = "CircleFill: " + String(time_circle_fill);
+    tft.DrawText( text, 0, pos, Shield_ili9341::Color_White, g_font_data, g_font_info );
+    pos += step;
+
+    text = "3D: " + String(time_3d);
+    tft.DrawText( text, 0, pos, Shield_ili9341::Color_White, g_font_data, g_font_info );
+    pos += step;
+    
+    delay(5000);
   }
 }
 

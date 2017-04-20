@@ -3,7 +3,7 @@
 #if defined(__AVR_ATmega328P__) // Arduino Uno
 
 //generic china UNO shield
-#if 1
+#if 0
 
 #define TFT_PIN_COUNT 8
 static const int LCDpin[TFT_PIN_COUNT] = {8, 9, 2, 3, 4, 5, 6, 7};
@@ -198,28 +198,24 @@ static const int LCDpin[TFT_PIN_COUNT] = {12, 13, 14, 15, 16, 17, 18, 19};
 #elif defined(__STM32F1__)
 
 #define TFT_PIN_COUNT 8
-static const int LCDpin[TFT_PIN_COUNT] = {PB3, PB4, PB5, PB6, PB7, PB8, PB9, PB10};
+static const int LCDpin[TFT_PIN_COUNT] = {PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7};
 
-#define RESET 12
-#define CS PB11
-#define RS PB12
-#define WR PB13
-#define RD PB14
+#define RESET PB3
+#define CS    PB4
+#define RS    PB5
+#define WR    PB6
+#define RD    PB7
 
-//set hi
-GPIOC->regs->BSRR = 1U << 13;
-//set low
-GPIOC->regs->BSRR = 1U << (13+15);
+#define TFT_SWAP            GPIOB->regs->BSRR = (uint32_t)1U << (6+16); GPIOB->regs->BSRR = (uint32_t)1U << 6;
+#define TFT_SWAP_RD         GPIOB->regs->BSRR = (uint32_t)1U << (7+16); GPIOB->regs->BSRR = (uint32_t)1U << 7;
+#define TFT_CMD_MODE        GPIOB->regs->BSRR = (uint32_t)1U << (5+16);
+#define TFT_DATA_MODE       GPIOB->regs->BSRR = (uint32_t)1U << 5;
+#define TFT_DATAPIN_SET(v)  GPIOA->regs->BSRR = ((uint32_t)(v)) | ( (uint32_t)((~(v)) & 0xFF) << (16) );
 
-#define TFT_SWAP_DATA_WR    PORTB = 1+4+16; PORTB = 1+2+4+16;
-#define TFT_SWAP_CMD_WR     PORTB = 1+16; PORTB = 1+2+16;
-#define TFT_SWAP            PORTB &= ~2;PORTB |= 2;
-#define TFT_SWAP_RD         PORTB &= ~1;PORTB |= 1;
-#define TFT_CMD_MODE        PORTB &= ~4;
-#define TFT_DATA_MODE       PORTB |= 4;
-#define TFT_DATAPIN_SET(v)  PORTD=v;
+#define TFT_SWAP_DATA_WR    TFT_DATA_MODE  TFT_SWAP
+#define TFT_SWAP_CMD_WR     TFT_CMD_MODE   TFT_SWAP
 
-#define TFT_SWAP_FAST_PREPARE
-#define TFT_SWAP_FAST           TFT_SWAP_DATA_WR
+#define TFT_SWAP_FAST_PREPARE    TFT_DATA_MODE
+#define TFT_SWAP_FAST            TFT_SWAP
 
 #endif

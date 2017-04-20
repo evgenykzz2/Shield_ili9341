@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include "Arduino.h"
 
-#if !defined(ARDUINO_ARCH_ESP32)
+#if !defined(ARDUINO_ARCH_ESP32) && !defined(ESP8266)
 #include <avr/pgmspace.h>
 #endif
 
