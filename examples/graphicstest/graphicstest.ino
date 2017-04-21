@@ -1,7 +1,13 @@
 #include "Shield_ili9341.h"
 #include "font/arial_14.h"
 
-#define USE_SERIAL
+//#define USE_SERIAL
+
+#if defined(ESP8266)
+  #define DISABLE_WATCHDOG ESP.wdtDisable();
+#else
+  #define DISABLE_WATCHDOG
+#endif
 
 Shield_ili9341 tft;
 
@@ -23,6 +29,7 @@ void Transform( float x, float y, float z, const float* mt, float& xt, float& yt
 
 void loop()
 {
+  DISABLE_WATCHDOG
   unsigned long time_text = 0;
   {
     unsigned long time0 = micros();
@@ -37,6 +44,7 @@ void loop()
     #endif
   }
 
+  DISABLE_WATCHDOG
   unsigned long time_move_text = 0;
   {
     unsigned long time0 = micros();
@@ -58,6 +66,7 @@ void loop()
     #endif
   }
 
+  DISABLE_WATCHDOG
   //Fast fill 8bit color
   int fill_frame_count = 64;
   unsigned long time_fill8 = 0;
@@ -75,6 +84,7 @@ void loop()
     #endif
   }
 
+  DISABLE_WATCHDOG
   //Fill 16bit color
   unsigned long time_fill16 = 0;
   {
@@ -91,6 +101,7 @@ void loop()
     #endif
   }
 
+  DISABLE_WATCHDOG
   //Lines
   unsigned long time_lines = 0;
   {
@@ -111,6 +122,7 @@ void loop()
     #endif
   }
 
+  DISABLE_WATCHDOG
   unsigned long time_pixels = 0;
   {
     tft.FillFast( Shield_ili9341::Color8_Black );
@@ -125,6 +137,7 @@ void loop()
     #endif
   }
 
+  DISABLE_WATCHDOG
   unsigned long time_rect = 0;
   {
     tft.FillFast( Shield_ili9341::Color8_Black );
@@ -140,6 +153,7 @@ void loop()
     #endif
   }
 
+  DISABLE_WATCHDOG
   unsigned long time_circle = 0;
   {
     tft.FillFast( Shield_ili9341::Color8_Black );
@@ -157,6 +171,7 @@ void loop()
     #endif
   }
 
+  DISABLE_WATCHDOG
   unsigned long time_circle_fill = 0;
   {
     tft.FillFast( Shield_ili9341::Color8_Black );
@@ -174,6 +189,7 @@ void loop()
     #endif
   }
 
+  DISABLE_WATCHDOG
   unsigned long time_3d = 0;
   {
     tft.FillFast( Shield_ili9341::Color8_Black );
@@ -288,6 +304,7 @@ void loop()
     #endif
   }
 
+  DISABLE_WATCHDOG
   //Show result
   {
     String text;

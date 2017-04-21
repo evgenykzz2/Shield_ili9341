@@ -22,16 +22,26 @@ void Shield_ili9341::Init( int16_t tft_width, int16_t tft_height, uint8_t mode )
   m_tft_height = tft_height;
 
   //PinSetup
+#ifdef RESET
   pinMode(RESET, OUTPUT);
+#endif
+#ifdef CS
   pinMode(CS, OUTPUT);
+#endif
   pinMode(RS, OUTPUT);
   pinMode(WR, OUTPUT);
+#ifdef RD
   pinMode(RD, OUTPUT);
+#endif
   for ( int i = 0; i < TFT_PIN_COUNT; ++i )
     pinMode(LCDpin[i], OUTPUT);
+#ifdef RD
   digitalWrite( RD, HIGH );
+#endif
   digitalWrite( WR, HIGH );
+#ifdef CS
   digitalWrite( CS, LOW );
+#endif
 
   ResetHw();
   ResetSw();
@@ -69,10 +79,12 @@ void Shield_ili9341::Init( int16_t tft_width, int16_t tft_height, uint8_t mode )
 
 void Shield_ili9341::ResetHw()
 {
+#ifdef RESET
   digitalWrite(RESET, LOW);
   delay(12);
   digitalWrite(RESET, HIGH);
   delay(12);
+#endif
 }
 
 void Shield_ili9341::ResetSw()

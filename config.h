@@ -136,6 +136,11 @@ static const int LCDpin[TFT_PIN_COUNT] = {25, 26, 27, 28, 14, 15, 29, 11};
 // RESET CS RS WR   RD
 //  2    4   8  16  32
 
+// TODO !!
+//REG_PIOC_SODR   Set Output Data Register
+//REG_PIOC_CODR   Clear Output Data Register
+//REG_PIOC_ODSR   Output Data Status Register
+
 #define TFT_SWAP_DATA_WR    REG_PIOC_ODSR = 32+8+2; REG_PIOC_ODSR = 32+8+2+16;
 #define TFT_SWAP_CMD_WR     REG_PIOC_ODSR = 32+2; REG_PIOC_ODSR = 32+2+16;
 #define TFT_SWAP            REG_PIOC_ODSR &= ~16; REG_PIOC_ODSR |= 16;
@@ -149,28 +154,30 @@ static const int LCDpin[TFT_PIN_COUNT] = {25, 26, 27, 28, 14, 15, 29, 11};
 #elif defined(ESP8266)
 
 #define TFT_PIN_COUNT 8
-static const int LCDpin[TFT_PIN_COUNT] = {D3, D10, D4, D9, D2, D1, D6, D7};
+static const int LCDpin[TFT_PIN_COUNT] = {0, 1, 2, 3, 4, 5, 12, 13};
 
-#define RESET D0
-#define CS D0
-#define RS D5
-#define WR D8
-#define RD D0
 
-// RESET CS RS     WR    RD
-//           4000  8000
+//RESET ->4.7k-> VCC
+//CS    ->4.7k-> GND
+#define RS 14
+#define WR 15
+//RD    ->4.7k-> VCC
 
-//FIX me
-#define TFT_SWAP_DATA_WR  GPO &= ~0x8000; GPO |= 0x8000;
-#define TFT_SWAP_CMD_WR   GPO &= ~0x8000; GPO |= 0x8000;
-#define TFT_SWAP          GPO &= ~0x8000; GPO |= 0x8000;
-#define TFT_CMD_MODE      GPO &= ~0x4000;
-#define TFT_DATA_MODE     GPO |= 0x4000;
+#define TFT_SWAP          GPOC = 1 << WR; GPOS = 1 << WR;
+#define TFT_CMD_MODE      GPOC = 1 << RS;
+#define TFT_DATA_MODE     GPOS = 1 << RS;
 
-#define TFT_DATAPIN_SET(v) GPO = (GPO&0xFFFFCFC0) | ( v&0x3F) | ((v&0xC0) << 6);
+#define TFT_SWAP_DATA_WR  TFT_DATA_MODE TFT_SWAP
+#define TFT_SWAP_CMD_WR   TFT_CMD_MODE  TFT_SWAP
 
-#define TFT_SWAP_FAST_PREPARE
-#define TFT_SWAP_FAST           TFT_SWAP_DATA_WR
+//Has no effect
+//#define TFT_DIRECT_GPIO_REG(v)   uint32_t GPIO_SET_##v   = (v&0x3F) | ((v&0xC0) << 6); uint32_t GPIO_CLEAR_##v = ( (~v) &0x3F) | (( (~v)&0xC0) << 6);
+//#define TFT_DIRECT_DATAPIN(v)   GPOS = GPIO_SET_##v; GPOC = GPIO_CLEAR_##v;
+
+#define TFT_DATAPIN_SET(v) GPOS = (v&0x3F) | ((v&0xC0) << 6); GPOC = ( (~v) &0x3F) | (( (~v)&0xC0) << 6);
+
+#define TFT_SWAP_FAST_PREPARE   TFT_DATA_MODE
+#define TFT_SWAP_FAST           TFT_SWAP
 
 #elif defined(ARDUINO_ARCH_ESP32)
 
