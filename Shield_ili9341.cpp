@@ -74,6 +74,7 @@ void Shield_ili9341::Init( int16_t tft_width, int16_t tft_height, uint8_t mode )
   SendCmd(0x13);
   SendCmd(0x38);
 
+  Invert(false);
   MemoryAccessControl( 8 + mode );
 }
 
@@ -145,6 +146,11 @@ void Shield_ili9341::PartialMode()
 void Shield_ili9341::NormalMode()
 {
   SendCmd(0x13);
+}
+
+void Shield_ili9341::Invert( bool invert )
+{
+    SendCmd( invert ? 0x21 : 0x20 );
 }
 
 void Shield_ili9341::TearingEffectLineOn()

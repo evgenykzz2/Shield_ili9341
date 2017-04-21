@@ -95,6 +95,7 @@ public:
   void PartialArea( uint16_t area_start, uint16_t area_end );
   void PartialMode();
   void NormalMode();
+  void Invert( bool invert );
   void TearingEffectLineOn();
   void TearingEffectLineOff();
   void MemoryAccessControl( uint8_t mode );

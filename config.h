@@ -141,15 +141,21 @@ static const int LCDpin[TFT_PIN_COUNT] = {25, 26, 27, 28, 14, 15, 29, 11};
 //REG_PIOC_CODR   Clear Output Data Register
 //REG_PIOC_ODSR   Output Data Status Register
 
-#define TFT_SWAP_DATA_WR    REG_PIOC_ODSR = 32+8+2; REG_PIOC_ODSR = 32+8+2+16;
-#define TFT_SWAP_CMD_WR     REG_PIOC_ODSR = 32+2; REG_PIOC_ODSR = 32+2+16;
-#define TFT_SWAP            REG_PIOC_ODSR &= ~16; REG_PIOC_ODSR |= 16;
-#define TFT_CMD_MODE        REG_PIOC_ODSR &= ~8;
-#define TFT_DATA_MODE       REG_PIOC_ODSR |= 8;
-#define TFT_DATAPIN_SET(v)  REG_PIOD_ODSR = v;
+#define TFT_SWAP            REG_PIOC_CODR = 16; REG_PIOC_SODR = 16;
+#define TFT_CMD_MODE        REG_PIOC_CODR = 8;
+#define TFT_DATA_MODE       REG_PIOC_SODR = 8;
+//Fast most 75fps
+//#define TFT_DATAPIN_SET(v)  REG_PIOD_ODSR = v;
+//Strict 55fps
+#define TFT_DATAPIN_SET(v)  REG_PIOD_CODR = (uint8_t)(~(v)); REG_PIOD_SODR = (uint8_t)(v);
+//Slow & Strict 35fps
+//#define TFT_DATAPIN_SET(v)  REG_PIOD_ODSR = (REG_PIOD_ODSR & 0xFFFFFF00) | v;
 
-#define TFT_SWAP_FAST_PREPARE
-#define TFT_SWAP_FAST           TFT_SWAP_DATA_WR
+#define TFT_SWAP_DATA_WR    TFT_DATA_MODE TFT_SWAP
+#define TFT_SWAP_CMD_WR     TFT_CMD_MODE  TFT_SWAP
+
+#define TFT_SWAP_FAST_PREPARE   TFT_DATA_MODE
+#define TFT_SWAP_FAST           TFT_SWAP
 
 #elif defined(ESP8266)
 
