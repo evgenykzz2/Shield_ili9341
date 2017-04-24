@@ -11,13 +11,16 @@ protected:
     const uint8_t*  m_block_palette;
 
     int16_t             m_scroll_x;
+    int16_t             m_scroll_prev_x;
     uint8_t             m_block_width;
     uint8_t             m_block_height;
     uint8_t*            m_block_map;
     uint8_t*            m_block_flag;
+    int16_t*            m_block_x;
     RequestBlock_func   m_block_request;
-    static const uint8_t       g_sprite_per_line_max = 32;
-    uint8_t             m_sprite_of_interest[g_sprite_per_line_max];
+
+    static const uint8_t    g_sprite_per_line_max = 32;
+    uint8_t                 m_sprite_of_interest[g_sprite_per_line_max];
 
     static const uint8_t    g_sprite_per_block_max = 4;
     uint8_t                 m_sprite_at_block[g_sprite_per_block_max];
@@ -28,7 +31,7 @@ protected:
         BlockFlag_Sprite  = 2
     };
 
-    void DrawBlockOverlayChr( int16_t x, int16_t y, uint16_t id, uint8_t pal, uint8_t overlay_sprites );
+    void DrawBlockOverlayChr( int16_t x_world, int16_t x, int16_t y, uint16_t id, uint8_t pal, uint8_t overlay_sprites );
 
 public:
     NesScrollGame();
