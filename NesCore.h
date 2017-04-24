@@ -2,19 +2,6 @@
 
 #include "Shield_ili9341.h"
 
-class NesOffscreen
-{
-    uint8_t* m_buffer;
-    int16_t  m_width;
-    int16_t  m_height;
-
-    friend class NesCore;
-public:
-    NesOffscreen();
-    ~NesOffscreen();
-    void Init( int16_t width, int16_t height );
-};
-
 class NesCore : public Shield_ili9341
 {
 public:
@@ -27,19 +14,50 @@ public:
         void FrameWait();
     };
 
+    enum ESpriteFlag
+    {
+        SpriteFlag_Update      = 4,
+        SpriteFlag_Visible     = 8,
+        SpriteFlag_PrevVisible = 16
+    };
+
+    class Sprite
+    {
+        int16_t  m_prev_x;
+        int16_t  m_prev_y;
+        int16_t  m_x;
+        int16_t  m_y;
+        uint16_t m_sprite_id;
+        uint8_t  m_pal;
+        uint8_t  m_flag;
+    private:
+        friend class NesScrollGame;
+        void _Sync();
+        bool PrevVisible() const;
+        bool Updated() const;
+    public:
+        void Move( int16_t x, int16_t y );
+        void SetVisible( bool visible );
+        bool Visible() const;
+        void SetPalette( uint8_t pal_id );
+        void SetId( uint16_t id );
+        void SetMirror( uint8_t mirror );
+        uint8_t Mirror() const;
+    };
+
     enum EMirror
     {
         MirrorH = 1,
-        MirrorV = 2
+        MirrorV = 2,
     };
+
+    static const uint8_t g_sprite_max = 64;
+    Sprite  m_sprite_buffer[g_sprite_max];
 protected:
     static const uint8_t g_palette[64*2] PROGMEM;
 
     const uint8_t* m_charset;
     const uint8_t* m_palette;
-
-    const uint8_t* m_block_id;
-    const uint8_t* m_block_palette;
 
     uint8_t m_palette_id;
     uint8_t m_color[8];
@@ -47,13 +65,8 @@ protected:
     uint8_t m_palette_ofs_id;
     uint8_t m_color_ofs[4];
 
-    void SetPaletteOffScreenId( uint8_t id );
-
     void DrawChrSafe( int16_t x, int16_t y, uint16_t id, uint8_t mirror );
     void DrawChrUnsafe( int16_t x, int16_t y, uint16_t id, uint8_t mirror );
-
-    void DrawOffScreenChrSafe( NesOffscreen& offscreen, int16_t x, int16_t y, uint16_t id, uint8_t mirror );
-    void DrawOffScreenChrUnsafe( NesOffscreen& offscreen, int16_t x, int16_t y, uint16_t id, uint8_t mirror );
 
 public:
     NesCore();
@@ -62,11 +75,4 @@ public:
     void DrawChr( int16_t x, int16_t y, uint16_t id, uint8_t pal, uint8_t mirror );
 
     void SetPaletteId( uint8_t id );
-
-    void InitBlock( const uint8_t* block_id, const uint8_t* block_palette );
-    void DrawBlock( int16_t x, int16_t y, uint8_t block_id );
-
-    void DrawOffScreenChr( NesOffscreen& offscreen, int16_t x, int16_t y, uint16_t id, uint8_t pal, uint8_t mirror );
-    //void DrawOffscreenChrAlpha( NesOffscreen& offscreen, int16_t x, int16_t y, uint16_t id, uint8_t pal, uint8_t mirror );
-    void DrawOffscreenBuffer( NesOffscreen& offscreen, int16_t x, int16_t y );
 };
