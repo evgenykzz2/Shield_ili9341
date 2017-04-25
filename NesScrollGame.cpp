@@ -89,24 +89,29 @@ void NesScrollGame::DrawBlockOverlayChr( int16_t x_world, int16_t x, int16_t y, 
     StreamStart();
     SendCmd(0x2c);
     TFT_DATA_MODE
-    for ( uint8_t yi = 0; yi < 8; ++yi )
-    {
-        uint8_t b0 = pgm_read_byte_near(m_charset+id*16+yi+0);
-        uint8_t b1 = pgm_read_byte_near(m_charset+id*16+yi+8);
-        for ( uint8_t xi = 0; xi < 8; ++xi )
-        {
-            uint8_t effect_ix = ((b0>>6)&2) | ( (b1>>5) & 4);
-            uint8_t effect_pal = pal;
 
-            for ( uint8_t n = 0; n < overlay; ++n )
+    /*if ( overlay == 1 )
+    {
+        uint8_t idd = m_sprite_at_block[0];
+        uint16_t sprite_idd = m_sprite_buffer[idd].m_sprite_id*16;
+        int16_t sprite_x = m_sprite_buffer[idd].m_x;
+        int16_t sprite_y = m_sprite_buffer[idd].m_y;
+
+        for ( uint8_t yi = 0; yi < 8; ++yi )
+        {
+            uint8_t b0 = pgm_read_byte_near(m_charset+id*16+yi+0);
+            uint8_t b1 = pgm_read_byte_near(m_charset+id*16+yi+8);
+            for ( uint8_t xi = 0; xi < 8; ++xi )
             {
-                uint8_t idd = m_sprite_at_block[n];
-                int16_t ov_y = y+yi - m_sprite_buffer[idd].m_y;
-                int16_t ov_x = x_world+xi - m_sprite_buffer[idd].m_x;
+                uint8_t effect_ix = ((b0>>6)&2) | ( (b1>>5) & 4);
+                uint8_t effect_pal = pal;
+                
+                int16_t ov_y = y+yi - sprite_y;
+                int16_t ov_x = x_world+xi - sprite_x;
                 if ( ov_x >= 0 && ov_x < 8 && ov_y >= 0 && ov_y < 8 )
                 {
-                    uint8_t sprite_b0 = pgm_read_byte_near(m_charset+m_sprite_buffer[idd].m_sprite_id*16+ov_y+0) << ov_x;
-                    uint8_t sprite_b1 = pgm_read_byte_near(m_charset+m_sprite_buffer[idd].m_sprite_id*16+ov_y+8) << ov_x;
+                    uint8_t sprite_b0 = pgm_read_byte_near(m_charset+sprite_idd+ov_y+0) << ov_x;
+                    uint8_t sprite_b1 = pgm_read_byte_near(m_charset+sprite_idd+ov_y+8) << ov_x;
                     uint8_t ix = ((sprite_b0>>6)&2) | ( (sprite_b1>>5) & 4);
                     if ( ix != 0 )
                     {
@@ -114,26 +119,78 @@ void NesScrollGame::DrawBlockOverlayChr( int16_t x_world, int16_t x, int16_t y, 
                         effect_pal = m_sprite_buffer[idd].m_pal;
                     }
                 }
-            }
-            
-            if ( pal == effect_pal )
-            {
-                TFT_DATAPIN_SET(m_color[effect_ix+0]);
-                TFT_SWAP_DATA_WR
-                TFT_DATAPIN_SET(m_color[effect_ix+1]);
-                TFT_SWAP_DATA_WR
-            } else
-            {
-                m_palette_id = id;
-                uint8_t pl = pgm_read_byte_near(m_palette + effect_pal*4 + (effect_ix >> 1));
-                TFT_DATAPIN_SET( pgm_read_byte_near(g_palette + pl*2 + 0) )
-                TFT_SWAP_DATA_WR
-                TFT_DATAPIN_SET( pgm_read_byte_near(g_palette + pl*2 + 1) )
-                TFT_SWAP_DATA_WR
-            }
 
-            b0 <<= 1;
-            b1 <<= 1;
+                if ( pal == effect_pal )
+                {
+                    TFT_DATAPIN_SET(m_color[effect_ix+0]);
+                    TFT_SWAP_DATA_WR
+                    TFT_DATAPIN_SET(m_color[effect_ix+1]);
+                    TFT_SWAP_DATA_WR
+                } else
+                {
+                    m_palette_id = id;
+                    uint8_t pl = pgm_read_byte_near(m_palette + effect_pal*4 + (effect_ix >> 1));
+                    TFT_DATAPIN_SET( pgm_read_byte_near(g_palette + pl*2 + 0) )
+                    TFT_SWAP_DATA_WR
+                    TFT_DATAPIN_SET( pgm_read_byte_near(g_palette + pl*2 + 1) )
+                    TFT_SWAP_DATA_WR
+                }
+                b0 <<= 1;
+                b1 <<= 1;
+            }
+        }
+    } else*/
+    {
+        for ( uint8_t yi = 0; yi < 8; ++yi )
+        {
+            uint8_t b0 = pgm_read_byte_near(m_charset+id*16+yi+0);
+            uint8_t b1 = pgm_read_byte_near(m_charset+id*16+yi+8);
+            for ( uint8_t xi = 0; xi < 8; ++xi )
+            {
+                uint8_t effect_ix = ((b0>>6)&2) | ( (b1>>5) & 4);
+                uint8_t effect_pal = pal;
+
+                for ( uint8_t n = 0; n < overlay; ++n )
+                {
+                    uint8_t idd = m_sprite_at_block[n];
+                    int16_t ov_y = y+yi - m_sprite_buffer[idd].m_y;
+                    int16_t ov_x = x_world+xi - m_sprite_buffer[idd].m_x;
+                    if ( ov_x >= 0 && ov_x < 8 && ov_y >= 0 && ov_y < 8 )
+                    {
+                        if ( m_sprite_buffer[idd].Mirror() & MirrorV )
+                            ov_y = 7-ov_y;
+                        if ( m_sprite_buffer[idd].Mirror() & MirrorH )
+                            ov_x = 7-ov_x;
+                        uint8_t sprite_b0 = pgm_read_byte_near(m_charset+m_sprite_buffer[idd].m_sprite_id*16+ov_y+0) << ov_x;
+                        uint8_t sprite_b1 = pgm_read_byte_near(m_charset+m_sprite_buffer[idd].m_sprite_id*16+ov_y+8) << ov_x;
+                        uint8_t ix = ((sprite_b0>>6)&2) | ( (sprite_b1>>5) & 4);
+                        if ( ix != 0 )
+                        {
+                            effect_ix = ix;
+                            effect_pal = m_sprite_buffer[idd].m_pal;
+                        }
+                    }
+                }
+
+                if ( pal == effect_pal )
+                {
+                    TFT_DATAPIN_SET(m_color[effect_ix+0]);
+                    TFT_SWAP_DATA_WR
+                    TFT_DATAPIN_SET(m_color[effect_ix+1]);
+                    TFT_SWAP_DATA_WR
+                } else
+                {
+                    m_palette_id = id;
+                    uint8_t pl = pgm_read_byte_near(m_palette + effect_pal*4 + (effect_ix >> 1));
+                    TFT_DATAPIN_SET( pgm_read_byte_near(g_palette + pl*2 + 0) )
+                    TFT_SWAP_DATA_WR
+                    TFT_DATAPIN_SET( pgm_read_byte_near(g_palette + pl*2 + 1) )
+                    TFT_SWAP_DATA_WR
+                }
+
+                b0 <<= 1;
+                b1 <<= 1;
+            }
         }
     }
 }
