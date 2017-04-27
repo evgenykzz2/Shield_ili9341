@@ -147,15 +147,27 @@ void NesScrollGame::DrawBlockOverlayChr( int16_t x_world, int16_t x, int16_t y, 
                 }
             } else
             {
-                for ( uint8_t xi = 0; xi < 8; ++xi )
+                if ( b0 == 0 && b1 == 0 )
                 {
-                    uint8_t ix = ((b0>>6)&2) | ( (b1>>5) & 4);
-                    TFT_DATAPIN_SET(m_color[ix+0]);
-                    TFT_SWAP_DATA_WR
-                    TFT_DATAPIN_SET(m_color[ix+1]);
-                    TFT_SWAP_DATA_WR
-                    b0 <<= 1;
-                    b1 <<= 1;
+                    for ( uint8_t xi = 0; xi < 8; ++xi )
+                    {
+                        TFT_DATAPIN_SET(m_color[0]);
+                        TFT_SWAP_DATA_WR
+                        TFT_DATAPIN_SET(m_color[1]);
+                        TFT_SWAP_DATA_WR
+                    }
+                } else
+                {
+                    for ( uint8_t xi = 0; xi < 8; ++xi )
+                    {
+                        uint8_t ix = ((b0>>6)&2) | ( (b1>>5) & 4);
+                        TFT_DATAPIN_SET(m_color[ix+0]);
+                        TFT_SWAP_DATA_WR
+                        TFT_DATAPIN_SET(m_color[ix+1]);
+                        TFT_SWAP_DATA_WR
+                        b0 <<= 1;
+                        b1 <<= 1;
+                    }
                 }
             }
         }
@@ -241,15 +253,27 @@ void NesScrollGame::DrawBlockOverlayChr( int16_t x_world, int16_t x, int16_t y, 
                 }
             } else
             {
-                for ( uint8_t xi = 0; xi < 8; ++xi )
+                if ( b0 == 0 && b1 == 0 )
                 {
-                    uint8_t ix = ((b0>>6)&2) | ( (b1>>5) & 4);
-                    TFT_DATAPIN_SET(m_color[ix+0]);
-                    TFT_SWAP_DATA_WR
-                    TFT_DATAPIN_SET(m_color[ix+1]);
-                    TFT_SWAP_DATA_WR
-                    b0 <<= 1;
-                    b1 <<= 1;
+                    for ( uint8_t xi = 0; xi < 8; ++xi )
+                    {
+                        TFT_DATAPIN_SET(m_color[0]);
+                        TFT_SWAP_DATA_WR
+                        TFT_DATAPIN_SET(m_color[1]);
+                        TFT_SWAP_DATA_WR
+                    }
+                } else
+                {
+                    for ( uint8_t xi = 0; xi < 8; ++xi )
+                    {
+                        uint8_t ix = ((b0>>6)&2) | ( (b1>>5) & 4);
+                        TFT_DATAPIN_SET(m_color[ix+0]);
+                        TFT_SWAP_DATA_WR
+                        TFT_DATAPIN_SET(m_color[ix+1]);
+                        TFT_SWAP_DATA_WR
+                        b0 <<= 1;
+                        b1 <<= 1;
+                    }
                 }
             }
         }
