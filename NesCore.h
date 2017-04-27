@@ -61,10 +61,7 @@ protected:
 
     uint8_t m_palette_id;
     uint8_t m_color[8];
-
-    uint8_t m_palette_ofs_id;
-    uint8_t m_color_ofs[4];
-
+    
     void DrawChrSafe( int16_t x, int16_t y, uint16_t id, uint8_t mirror );
     void DrawChrUnsafe( int16_t x, int16_t y, uint16_t id, uint8_t mirror );
 

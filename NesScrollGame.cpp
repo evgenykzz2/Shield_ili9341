@@ -90,56 +90,170 @@ void NesScrollGame::DrawBlockOverlayChr( int16_t x_world, int16_t x, int16_t y, 
     SendCmd(0x2c);
     TFT_DATA_MODE
 
-    /*if ( overlay == 1 )
+    if ( overlay == 1 )
     {
-        uint8_t idd = m_sprite_at_block[0];
-        uint16_t sprite_idd = m_sprite_buffer[idd].m_sprite_id*16;
-        int16_t sprite_x = m_sprite_buffer[idd].m_x;
-        int16_t sprite_y = m_sprite_buffer[idd].m_y;
+        Sprite& sprite0 = m_sprite_buffer[ m_sprite_at_block[0] ];
 
         for ( uint8_t yi = 0; yi < 8; ++yi )
         {
             uint8_t b0 = pgm_read_byte_near(m_charset+id*16+yi+0);
             uint8_t b1 = pgm_read_byte_near(m_charset+id*16+yi+8);
-            for ( uint8_t xi = 0; xi < 8; ++xi )
+            
+            int16_t sy0 = y+yi - sprite0.m_y;
+            uint8_t cola0 = 0, colb0 = 0;
+            if ( sy0 >= 0 && sy0 < 8 )
             {
-                uint8_t effect_ix = ((b0>>6)&2) | ( (b1>>5) & 4);
-                uint8_t effect_pal = pal;
-                
-                int16_t ov_y = y+yi - sprite_y;
-                int16_t ov_x = x_world+xi - sprite_x;
-                if ( ov_x >= 0 && ov_x < 8 && ov_y >= 0 && ov_y < 8 )
+                if ( sprite0.Mirror() & MirrorV )
+                    sy0 = 7-sy0;
+                cola0 = pgm_read_byte_near(m_charset+sprite0.m_sprite_id*16+sy0+0);
+                colb0 = pgm_read_byte_near(m_charset+sprite0.m_sprite_id*16+sy0+8);
+            }
+            if ( cola0 != 0 || colb0 != 0 )
+            {
+                for ( uint8_t xi = 0; xi < 8; ++xi )
                 {
-                    uint8_t sprite_b0 = pgm_read_byte_near(m_charset+sprite_idd+ov_y+0) << ov_x;
-                    uint8_t sprite_b1 = pgm_read_byte_near(m_charset+sprite_idd+ov_y+8) << ov_x;
-                    uint8_t ix = ((sprite_b0>>6)&2) | ( (sprite_b1>>5) & 4);
-                    if ( ix != 0 )
-                    {
-                        effect_ix = ix;
-                        effect_pal = m_sprite_buffer[idd].m_pal;
-                    }
-                }
+                    uint8_t effect_ix = ((b0>>6)&2) | ( (b1>>5) & 4);
+                    uint8_t effect_pal = pal;
 
-                if ( pal == effect_pal )
-                {
-                    TFT_DATAPIN_SET(m_color[effect_ix+0]);
-                    TFT_SWAP_DATA_WR
-                    TFT_DATAPIN_SET(m_color[effect_ix+1]);
-                    TFT_SWAP_DATA_WR
-                } else
-                {
-                    m_palette_id = id;
-                    uint8_t pl = pgm_read_byte_near(m_palette + effect_pal*4 + (effect_ix >> 1));
-                    TFT_DATAPIN_SET( pgm_read_byte_near(g_palette + pl*2 + 0) )
-                    TFT_SWAP_DATA_WR
-                    TFT_DATAPIN_SET( pgm_read_byte_near(g_palette + pl*2 + 1) )
-                    TFT_SWAP_DATA_WR
+                    int16_t sx0 = x_world+xi - sprite0.m_x;
+                    if ( sx0 >= 0 && sx0 < 8 )
+                    {   
+                        if ( sprite0.Mirror() & MirrorH )
+                            sx0 = 7-sx0;
+                        uint8_t ix = (((cola0 << sx0)>>6)&2) | ( ((colb0 << sx0)>>5) & 4);
+                        if ( ix != 0 )
+                        {
+                            effect_ix = ix;
+                            effect_pal = sprite0.m_pal;
+                        }
+                    }
+
+                    if ( pal == effect_pal )
+                    {
+                        TFT_DATAPIN_SET(m_color[effect_ix+0]);
+                        TFT_SWAP_DATA_WR
+                        TFT_DATAPIN_SET(m_color[effect_ix+1]);
+                        TFT_SWAP_DATA_WR
+                    } else
+                    {
+                        uint8_t pl = pgm_read_byte_near(m_palette + effect_pal*4 + (effect_ix >> 1));
+                        TFT_DATAPIN_SET( pgm_read_byte_near(g_palette + pl*2 + 0) )
+                        TFT_SWAP_DATA_WR
+                        TFT_DATAPIN_SET( pgm_read_byte_near(g_palette + pl*2 + 1) )
+                        TFT_SWAP_DATA_WR
+                    }
+                    b0 <<= 1;
+                    b1 <<= 1;
                 }
-                b0 <<= 1;
-                b1 <<= 1;
+            } else
+            {
+                for ( uint8_t xi = 0; xi < 8; ++xi )
+                {
+                    uint8_t ix = ((b0>>6)&2) | ( (b1>>5) & 4);
+                    TFT_DATAPIN_SET(m_color[ix+0]);
+                    TFT_SWAP_DATA_WR
+                    TFT_DATAPIN_SET(m_color[ix+1]);
+                    TFT_SWAP_DATA_WR
+                    b0 <<= 1;
+                    b1 <<= 1;
+                }
             }
         }
-    } else*/
+    } else if ( overlay == 2 )
+    {
+        Sprite& sprite0 = m_sprite_buffer[ m_sprite_at_block[0] ];
+        Sprite& sprite1 = m_sprite_buffer[ m_sprite_at_block[1] ];
+
+        for ( uint8_t yi = 0; yi < 8; ++yi )
+        {
+            uint8_t b0 = pgm_read_byte_near(m_charset+id*16+yi+0);
+            uint8_t b1 = pgm_read_byte_near(m_charset+id*16+yi+8);
+            
+            int16_t sy0 = y+yi - sprite0.m_y;
+            uint8_t cola0 = 0, colb0 = 0;
+            if ( sy0 >= 0 && sy0 < 8 )
+            {
+                if ( sprite0.Mirror() & MirrorV )
+                    sy0 = 7-sy0;
+                cola0 = pgm_read_byte_near(m_charset+sprite0.m_sprite_id*16+sy0+0);
+                colb0 = pgm_read_byte_near(m_charset+sprite0.m_sprite_id*16+sy0+8);
+            }
+
+            int16_t sy1 = y+yi - sprite1.m_y;
+            uint8_t cola1 = 0, colb1 = 0;
+            if ( sy0 >= 0 && sy0 < 8 )
+            {
+                if ( sprite1.Mirror() & MirrorV )
+                    sy1 = 7-sy1;
+                cola1 = pgm_read_byte_near(m_charset+sprite1.m_sprite_id*16+sy1+0);
+                colb1 = pgm_read_byte_near(m_charset+sprite1.m_sprite_id*16+sy1+8);
+            }
+
+            if ( cola0 != 0 || colb0 != 0 || cola0 != 1 || colb1 != 0 )
+            {
+                for ( uint8_t xi = 0; xi < 8; ++xi )
+                {
+                    uint8_t effect_ix = ((b0>>6)&2) | ( (b1>>5) & 4);
+                    uint8_t effect_pal = pal;
+
+                    int16_t sx = x_world+xi - sprite0.m_x;
+                    if ( sx >= 0 && sx < 8 )
+                    {   
+                        if ( sprite0.Mirror() & MirrorH )
+                            sx = 7-sx;
+                        uint8_t ix = (((cola0 << sx)>>6)&2) | ( ((colb0 << sx)>>5) & 4);
+                        if ( ix != 0 )
+                        {
+                            effect_ix = ix;
+                            effect_pal = sprite0.m_pal;
+                        }
+                    }
+
+                    sx = x_world+xi - sprite1.m_x;
+                    if ( sx >= 0 && sx < 8 )
+                    {   
+                        if ( sprite1.Mirror() & MirrorH )
+                            sx = 7-sx;
+                        uint8_t ix = (((cola1 << sx)>>6)&2) | ( ((colb1 << sx)>>5) & 4);
+                        if ( ix != 0 )
+                        {
+                            effect_ix = ix;
+                            effect_pal = sprite1.m_pal;
+                        }
+                    }
+
+                    if ( pal == effect_pal )
+                    {
+                        TFT_DATAPIN_SET(m_color[effect_ix+0]);
+                        TFT_SWAP_DATA_WR
+                        TFT_DATAPIN_SET(m_color[effect_ix+1]);
+                        TFT_SWAP_DATA_WR
+                    } else
+                    {
+                        uint8_t pl = pgm_read_byte_near(m_palette + effect_pal*4 + (effect_ix >> 1));
+                        TFT_DATAPIN_SET( pgm_read_byte_near(g_palette + pl*2 + 0) )
+                        TFT_SWAP_DATA_WR
+                        TFT_DATAPIN_SET( pgm_read_byte_near(g_palette + pl*2 + 1) )
+                        TFT_SWAP_DATA_WR
+                    }
+                    b0 <<= 1;
+                    b1 <<= 1;
+                }
+            } else
+            {
+                for ( uint8_t xi = 0; xi < 8; ++xi )
+                {
+                    uint8_t ix = ((b0>>6)&2) | ( (b1>>5) & 4);
+                    TFT_DATAPIN_SET(m_color[ix+0]);
+                    TFT_SWAP_DATA_WR
+                    TFT_DATAPIN_SET(m_color[ix+1]);
+                    TFT_SWAP_DATA_WR
+                    b0 <<= 1;
+                    b1 <<= 1;
+                }
+            }
+        }
+    } else
     {
         for ( uint8_t yi = 0; yi < 8; ++yi )
         {

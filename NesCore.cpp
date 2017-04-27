@@ -98,7 +98,7 @@ uint8_t NesCore::Sprite::Mirror() const
 
 NesCore::NesCore() :
     m_charset(0), m_palette(0),
-    m_palette_id(255), m_palette_ofs_id(255)
+    m_palette_id(255)
 {
     memset( m_sprite_buffer, 0, sizeof(m_sprite_buffer) );
 }
