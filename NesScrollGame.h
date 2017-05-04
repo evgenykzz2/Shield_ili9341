@@ -42,4 +42,5 @@ public:
     void BlockRedraw();
     void Refresh();
     void SetScroll( int16_t x );
+    uint8_t GetBlock( int16_t x, int16_t y ) const;
 };

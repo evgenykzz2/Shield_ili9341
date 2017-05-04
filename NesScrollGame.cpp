@@ -193,7 +193,7 @@ void NesScrollGame::DrawBlockOverlayChr( int16_t x_world, int16_t x, int16_t y, 
 
             int16_t sy1 = y+yi - sprite1.m_y;
             uint8_t cola1 = 0, colb1 = 0;
-            if ( sy0 >= 0 && sy0 < 8 )
+            if ( sy1 >= 0 && sy1 < 8 )
             {
                 if ( sprite1.Mirror() & MirrorV )
                     sy1 = 7-sy1;
@@ -475,4 +475,9 @@ void NesScrollGame::SetScroll( int16_t x )
 {
     m_scroll_x = x;
     VerticalScrollingStartAddress( x % Width() );
+}
+
+uint8_t NesScrollGame::GetBlock( int16_t x, int16_t y ) const
+{
+    return m_block_map[x+y*m_block_width];
 }
