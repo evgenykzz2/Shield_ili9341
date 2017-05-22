@@ -231,4 +231,36 @@ static const int LCDpin[TFT_PIN_COUNT] = {PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7
 #define TFT_SWAP_FAST_PREPARE    TFT_DATA_MODE
 #define TFT_SWAP_FAST            TFT_SWAP
 
+#elif defined(__SAMD21G18A__) 
+
+#define TFT_PIN_COUNT 8
+static const int LCDpin[TFT_PIN_COUNT] = {8, 9, 2, 3, 4, 5, 6, 7};
+
+#define RESET A4
+#define CS A3
+#define RS A2
+#define WR A1
+#define RD A0
+
+#define TFT_SWAP            PORT->Group[1].OUTCLR.reg = 1<<8; PORT->Group[1].OUTSET.reg = 1 << 8;
+#define TFT_CMD_MODE        PORT->Group[1].OUTCLR.reg = 1<<9;
+#define TFT_DATA_MODE       PORT->Group[1].OUTSET.reg = 1<<9;
+
+//0  1  2  3  4  5  6  7
+//6  7  8  9  14 15 20 21
+//1  2  4  8  16 32 64 128
+
+//6 7 14 9 8  15 20 21 ???
+
+//#define TFT_DATAPIN_SET(v)  for ( uint8_t __n__ = 0; __n__ < 8; ++__n__ ) { if ((uint8_t)(v&(1<<__n__))) digitalWrite(LCDpin[__n__], HIGH); else digitalWrite(LCDpin[__n__], LOW); };
+#define TFT_DATAPIN_SET(v)  \
+    PORT->Group[0].OUTCLR.reg = (((~v)&(1+2+4+8))<<6) | (((~v)&(16+32))<<10) | (((~v)&(64+128))<<14); \
+    PORT->Group[0].OUTSET.reg = ((v&(1+2+4+8))<<6)    | ((v&(16+32))<<10)    | ((v&(64+128))<<14);
+
+#define TFT_SWAP_DATA_WR    TFT_DATA_MODE TFT_SWAP
+#define TFT_SWAP_CMD_WR     TFT_CMD_MODE  TFT_SWAP
+
+#define TFT_SWAP_FAST_PREPARE   TFT_DATA_MODE
+#define TFT_SWAP_FAST           TFT_SWAP
+
 #endif
