@@ -131,6 +131,7 @@ public:
   void StreamPixels8_16( uint8_t color8 );
   void StreamPixels8_64( uint8_t color8 );
   void StreamPixels8_256( uint8_t color8 );
+  void StreamPixels8_1024( uint8_t color8 );
 
   void DrawText( const String& str, int16_t x, int16_t y, uint16_t color, const uint8_t* font_data, const glyph_param* font_info );
   void DrawTextScale( const String& str, int scale, int16_t x, int16_t y, uint16_t color, const uint8_t* font_data, const glyph_param* font_info );

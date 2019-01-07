@@ -3,7 +3,7 @@
 #if defined(__AVR_ATmega328P__) // Arduino Uno
 
 //generic china UNO shield
-#if 0
+#if 1
 
 #define TFT_PIN_COUNT 8
 static const int LCDpin[TFT_PIN_COUNT] = {8, 9, 2, 3, 4, 5, 6, 7};

@@ -1424,6 +1424,37 @@ void Shield_ili9341::StreamPixels8_256( uint8_t color8 )
     }
 }
 
+void Shield_ili9341::StreamPixels8_1024( uint8_t color8 )
+{
+    TFT_SWAP_FAST_PREPARE
+    TFT_DATAPIN_SET(color8);
+    for ( uint8_t i = 0; i < 128; ++i )
+    {
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
+
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
+
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
+
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
+
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
+
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
+
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
+
+        TFT_SWAP_FAST
+        TFT_SWAP_FAST
+    }
+}
 
 void Shield_ili9341::TextRect( const String& str, int16_t& rect_left, int16_t& rect_top, int16_t& rect_right, int16_t& rect_bot, const uint8_t* font_data, const glyph_param* font_info )
 {
