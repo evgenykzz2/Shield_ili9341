@@ -123,11 +123,14 @@ public:
   void StreamPixel8( uint8_t color8 );
 
   void StreamPixels( uint16_t color, uint16_t count );
+  void StreamPixels_4( uint16_t color );
   void StreamPixels_16( uint16_t color );
   void StreamPixels_64( uint16_t color );
   void StreamPixels_256( uint16_t color );
+  void StreamPixels_1024( uint16_t color );
 
   void StreamPixels8( uint8_t color8, uint16_t count );
+  void StreamPixels8_4( uint8_t color8 );
   void StreamPixels8_16( uint8_t color8 );
   void StreamPixels8_64( uint8_t color8 );
   void StreamPixels8_256( uint8_t color8 );

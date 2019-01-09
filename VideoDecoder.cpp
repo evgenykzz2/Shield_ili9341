@@ -4,6 +4,166 @@
 VideoDecoder::VideoDecoder()
 {}
 
+static const uint8_t g_gradient_rb[32] =
+{
+	1, 0, 1, 0,   1, 0, 1, 0,  1, 0, 1, 0,   1, 0, 1, 0,   1, 0, 1, 0,   1, 0, 1, 0,   1, 0, 1, 0,   1, 0, 1, 0
+};
+
+static const uint8_t g_gradient_g[32] =
+{
+	1, 1, 1, 1,   1, 1, 1, 1,  1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1,   1, 1, 1, 1
+};
+
+#define RGB16(R, G, B) ( (((R<<3)|(G>>3))<<8)|((G<<5)|B) )
+		
+static const uint16_t g_gradient16[32] =
+{
+	RGB16(0,1,0), RGB16(1,1,1), RGB16(0,1,0), RGB16(1,1,1), RGB16(0,1,0), RGB16(1,1,1), RGB16(0,1,0), RGB16(1,1,1),
+	RGB16(0,1,0), RGB16(1,1,1), RGB16(0,1,0), RGB16(1,1,1), RGB16(0,1,0), RGB16(1,1,1), RGB16(0,1,0), RGB16(1,1,1),
+	RGB16(0,1,0), RGB16(1,1,1), RGB16(0,1,0), RGB16(1,1,1), RGB16(0,1,0), RGB16(1,1,1), RGB16(0,1,0), RGB16(1,1,1),
+	RGB16(0,1,0), RGB16(1,1,1), RGB16(0,1,0), RGB16(1,1,1), RGB16(0,1,0), RGB16(1,1,1), RGB16(0,1,0), RGB16(1,1,1)
+	
+	/*RGB16(0,0,0), RGB16(0,0,1), RGB16(0,0,0), RGB16(0,0,1), RGB16(0,0,0), RGB16(0,0,1), RGB16(0,0,0), RGB16(0,0,1),
+	RGB16(0,0,0), RGB16(0,0,1), RGB16(0,0,0), RGB16(0,0,1), RGB16(0,0,0), RGB16(0,0,1), RGB16(0,0,0), RGB16(0,0,1),
+	RGB16(0,0,0), RGB16(0,0,1), RGB16(0,0,0), RGB16(0,0,1), RGB16(0,0,0), RGB16(0,0,1), RGB16(0,0,0), RGB16(0,0,1),
+	RGB16(0,0,0), RGB16(0,0,1), RGB16(0,0,0), RGB16(0,0,1), RGB16(0,0,0), RGB16(0,0,1), RGB16(0,0,0), RGB16(0,0,1)*/
+	
+	/*RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0),
+	RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0),
+	RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0),
+	RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0), RGB16(0,1,0)*/
+	
+	/*RGB16(0,0,0), RGB16(1,0,0), RGB16(0,0,0), RGB16(1,0,0), RGB16(0,0,0), RGB16(1,0,0), RGB16(0,0,0), RGB16(1,0,0),
+	RGB16(0,0,0), RGB16(1,0,0), RGB16(0,0,0), RGB16(1,0,0), RGB16(0,0,0), RGB16(1,0,0), RGB16(0,0,0), RGB16(1,0,0),
+	RGB16(0,0,0), RGB16(1,0,0), RGB16(0,0,0), RGB16(1,0,0), RGB16(0,0,0), RGB16(1,0,0), RGB16(0,0,0), RGB16(1,0,0),
+	RGB16(0,0,0), RGB16(1,0,0), RGB16(0,0,0), RGB16(1,0,0), RGB16(0,0,0), RGB16(1,0,0), RGB16(0,0,0), RGB16(1,0,0)*/
+};
+
+void VideoDecoder::Decode32x32Gradient( uint16_t color_base, uint8_t d0, uint8_t d1 )
+{
+	for (uint8_t y = 0; y < 32; ++y)
+	{
+		uint8_t c0 = color_base & 0xFF;
+		uint8_t c1 = color_base >> 1;
+		for (uint8_t x = 0; x < 32; ++x)
+		{
+			TFT_DATAPIN_SET(c0); TFT_SWAP_DATA_WR
+			TFT_DATAPIN_SET(c1); TFT_SWAP_DATA_WR
+			c0 += 1;
+			c1 += 1;
+			//c |= g_gradient16[x];
+		}
+		color_base += g_gradient16[y];
+	}
+	
+	/*uint8_t r = (color_base >> 11) & 0x1F;	//5
+    uint8_t g = (color_base >> 5) & 0x3F;	//6
+    uint8_t b = (color_base) & 0x1F;	//5
+	
+	for (uint8_t y = 0; y < 32; ++y)
+	{
+		uint8_t rr = r;
+		uint8_t gg = g;
+		uint8_t bb = b;
+		
+		uint8_t h = (rr << 3) | (gg >> 3);
+		uint8_t l = (gg << 5) | bb;
+		for (uint8_t x = 0; x < 8; ++x)
+		{
+			TFT_DATAPIN_SET(h); TFT_SWAP_DATA_WR
+			TFT_DATAPIN_SET(l); TFT_SWAP_DATA_WR
+			TFT_DATAPIN_SET(h); TFT_SWAP_DATA_WR
+			TFT_DATAPIN_SET(l); TFT_SWAP_DATA_WR
+			TFT_DATAPIN_SET(h); TFT_SWAP_DATA_WR
+			TFT_DATAPIN_SET(l); TFT_SWAP_DATA_WR
+			TFT_DATAPIN_SET(h); TFT_SWAP_DATA_WR
+			TFT_DATAPIN_SET(l); TFT_SWAP_DATA_WR
+		}
+		r += g_gradient_rb[y];
+		g += g_gradient_g[y];
+		b += g_gradient_rb[y];
+	}*/
+}
+
+void VideoDecoder::Decode4x4Raw(const uint8_t* ptr)
+{
+    TFT_SWAP_FAST_PREPARE
+    for ( uint16_t i = 0; i < 16; ++i )
+    {
+        TFT_DATAPIN_SET(ptr[i*2+0]);
+        TFT_SWAP_FAST
+        TFT_DATAPIN_SET(ptr[i*2+1]);
+        TFT_SWAP_FAST
+    }
+}
+
+void VideoDecoder::Decode4x4Bin( uint8_t a, uint8_t b, uint8_t l0, uint8_t h0, uint8_t l1, uint8_t h1 )
+{
+    if ( (a & 1) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+
+    if ( (a & 2) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+
+    if ( (a & 4) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+
+	if ( (a & 8) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+
+	if ( (a & 16) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+
+	if ( (a & 32) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+
+	if ( (a & 64) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+
+	if ( (a & 128) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+
+	if ( (b & 1) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+
+    if ( (b & 2) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+
+    if ( (b & 4) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+
+	if ( (b & 8) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+
+	if ( (b & 16) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+
+	if ( (b & 32) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+
+	if ( (b & 64) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+
+	if ( (b & 128) != 0 )
+    { TFT_DATAPIN_SET(h1); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l1); TFT_SWAP_DATA_WR } else
+    { TFT_DATAPIN_SET(h0); TFT_SWAP_DATA_WR TFT_DATAPIN_SET(l0); TFT_SWAP_DATA_WR }
+}
+
 void VideoDecoder::Decode4x4( uint8_t l0, uint8_t h0,   uint8_t l1, uint8_t h1,   uint8_t l2, uint8_t h2,   uint8_t l3, uint8_t h3 )
 {
     for ( uint8_t i = 0; i < 4; ++i )
