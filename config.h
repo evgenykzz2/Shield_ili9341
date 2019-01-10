@@ -1,3 +1,4 @@
+#pragma once
 #include "Arduino.h" 
 
 #if defined(__AVR_ATmega328P__) // Arduino Uno

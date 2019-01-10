@@ -8,8 +8,12 @@ public:
     VideoDecoder();
 	void Decode32x32Gradient( uint16_t color_base, uint8_t d0, uint8_t d1 );
 	
+	void Decode8x8BinPtr( const uint8_t* ptr );
+	
 	void Decode4x4Raw( const uint8_t* ptr);
 	void Decode4x4Bin( uint8_t a, uint8_t b, uint8_t l0, uint8_t h0, uint8_t l1, uint8_t h1 );
+	void Decode4x4BinPtr( const uint8_t* ptr );
+	void Decode4x4Primitive( const uint8_t* ptr );
 
     void Decode4x4( uint8_t l0, uint8_t h0,   uint8_t l1, uint8_t h1,   uint8_t l2, uint8_t h2,   uint8_t l3, uint8_t h3 );
 

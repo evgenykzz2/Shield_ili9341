@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include "Arduino.h"
+#include "config.h"
 
 #if !defined(ARDUINO_ARCH_ESP32) && !defined(ESP8266)
 #include <avr/pgmspace.h>
@@ -128,6 +129,18 @@ public:
   void StreamPixels_64( uint16_t color );
   void StreamPixels_256( uint16_t color );
   void StreamPixels_1024( uint16_t color );
+  
+  #ifdef TFT_DATAPIN_LO_HI
+  void StreamPixelsLo_16( uint8_t lo, uint8_t hi );
+  void StreamPixelsLo_64( uint8_t lo, uint8_t hi );
+  void StreamPixelsLo_256( uint8_t lo, uint8_t hi );
+  void StreamPixelsLo_1024( uint8_t lo, uint8_t hi );
+  
+  void StreamPixelsHi_16( uint8_t lo, uint8_t hi );
+  void StreamPixelsHi_64( uint8_t lo, uint8_t hi );
+  void StreamPixelsHi_256( uint8_t lo, uint8_t hi );
+  void StreamPixelsHi_1024( uint8_t lo, uint8_t hi );
+  #endif
 
   void StreamPixels8( uint8_t color8, uint16_t count );
   void StreamPixels8_4( uint8_t color8 );
